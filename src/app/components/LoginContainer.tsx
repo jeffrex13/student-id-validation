@@ -18,31 +18,32 @@ const LoginContainer = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <Card>
+    <Card className="w-[23rem] pb-2 shadow-xl">
       <CardHeader>
         <Image
           className="mx-auto"
           src={Logo}
           alt="Logo"
-          width={100}
-          height={100}
+          width={140}
+          height={140}
         />
         <CardTitle>
-          <p className="text-2xl font-bold text-center">Login</p>
+          <p className="text-2xl font-extrabold text-center">Welcome!</p>
         </CardTitle>
         <CardDescription className="text-center">
           Please sign in to continue
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="space-y-4">
+        <form className="flex flex-col content-center gap-4">
           <div>
-            <Input type="text" placeholder="Enter Username" />
+            <Input type="text" placeholder="Enter Username" className="h-10" />
           </div>
           <div className="relative">
             <Input
               type={showPassword ? 'text' : 'password'}
               placeholder="Enter Password"
+              className="h-10"
             />
             <Button
               type="button"
@@ -63,8 +64,7 @@ const LoginContainer = () => {
           </div>
           <Button
             type="submit"
-            // variant="destructive"
-            className="w-full px-4 py-2 font-bold text-white rounded-lg"
+            className="w-full p-4 font-bold text-white rounded-lg mt-4"
           >
             Sign In
           </Button>
