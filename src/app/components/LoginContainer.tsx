@@ -24,8 +24,8 @@ const LoginContainer = () => {
           className="mx-auto"
           src={Logo}
           alt="Logo"
-          width={140}
-          height={140}
+          width={145}
+          height={145}
         />
         <CardTitle>
           <p className="text-2xl font-extrabold text-center">Welcome!</p>
