@@ -12,7 +12,7 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 
-import Logo from '../../../public/images/logo.png';
+import Logo from '../../public/images/logo.png';
 
 const LoginContainer = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,7 +28,7 @@ const LoginContainer = () => {
           height={145}
         />
         <CardTitle>
-          <p className="text-2xl font-extrabold text-center">Welcome!</p>
+          <p className="text-2xl font-semibold text-center">Welcome!</p>
         </CardTitle>
         <CardDescription className="text-center">
           Please sign in to continue
