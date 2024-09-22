@@ -28,9 +28,9 @@ export function Sidebar({ className }: SidebarProps) {
         className={cn(
           'flex-grow',
           'transition-all duration-300 ease-in-out',
-          'border-r border-gray-200',
+          'border-r border-gray-300',
           // isCollapsed ? 'w-20' : 'w-64',
-          'w-64',
+          'w-56',
         )}
       >
         <div
@@ -51,9 +51,9 @@ export function Sidebar({ className }: SidebarProps) {
               src={Logo}
               alt="Logo"
               // width={isCollapsed ? 48 : 96}
-              width={96}
+              width={90}
               // height={isCollapsed ? 48 : 96}
-              height={96}
+              height={90}
               priority
             />
           </div>

@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { LogOut, User } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 interface AppBarProps {
   userName?: string;
@@ -25,7 +26,8 @@ export default function AppBar({ userName }: AppBarProps) {
   };
 
   return (
-    <div className="flex items-center justify-end p-4 bg-white border-b border-gray-200">
+    <div className="flex items-center justify-end p-4 gap-4">
+      <ThemeToggle />
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-12 w-12 rounded-full">
