@@ -1,40 +1,24 @@
 'use client';
-import { Button } from '@/components/ui/button';
+
+import React, { useState } from 'react';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { EyeIcon, EyeOffIcon, Loader2 } from 'lucide-react';
+} from './ui/card';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
 
 import Logo from '../../public/images/logo.png';
 import Link from 'next/link';
-import { useAuth } from '@/app/contexts/authContext';
 
-const LoginContainer = () => {
-  const { login } = useAuth();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+const SignUpContainer = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>('');
-  // const [success, setSuccess] = useState('')
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
-    const result = await login({ username, password });
-    setIsLoading(false);
-
-    console.log(result);
-  };
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <Card className="w-[23rem] pb-2 shadow-xl">
@@ -47,33 +31,24 @@ const LoginContainer = () => {
           height={145}
         />
         <CardTitle>
-          <p className="text-2xl font-semibold text-center">Welcome!</p>
+          <p className="text-2xl font-semibold text-center">
+            Create an Account
+          </p>
         </CardTitle>
         <CardDescription className="text-center">
-          Please sign in to continue
+          Please sign up to continue
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form
-          className="flex flex-col content-center gap-4"
-          onSubmit={handleSubmit}
-        >
+        <form className="flex flex-col content-center gap-4">
           <div>
-            <Input
-              type="text"
-              placeholder="Enter Username"
-              className="h-10"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
+            <Input type="text" placeholder="Enter Username" className="h-10" />
           </div>
           <div className="relative">
             <Input
               type={showPassword ? 'text' : 'password'}
               placeholder="Enter Password"
               className="h-10"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
             />
             <Button
               type="button"
@@ -92,19 +67,40 @@ const LoginContainer = () => {
               </span>
             </Button>
           </div>
+          <div className="relative">
+            <Input
+              type={showConfirmPassword ? 'text' : 'password'}
+              placeholder="Confirm Password"
+              className="h-10"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+            >
+              {showConfirmPassword ? (
+                <EyeIcon className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <EyeOffIcon className="h-4 w-4" aria-hidden="true" />
+              )}
+              <span className="sr-only">
+                {showConfirmPassword ? 'Hide password' : 'Show password'}
+              </span>
+            </Button>
+          </div>
           <Button
             type="submit"
             className="w-full p-4 font-bold text-white rounded-lg mt-4"
-            disabled={isLoading}
           >
-            {isLoading ? <Loader2 className="animate-spin" /> : 'Login'}
+            Sign Up
           </Button>
-          {error && <p>{error}</p>}
           <div className="flex justify-center">
             <p className="text-xs text-gray-500">
-              Don&apos;t have an account?{' '}
-              <Link href="/signup" className="text-rose-600">
-                Create account
+              Already have an account?{' '}
+              <Link href="/login" className="text-rose-600">
+                Login
               </Link>
             </p>
           </div>
@@ -114,4 +110,4 @@ const LoginContainer = () => {
   );
 };
 
-export default LoginContainer;
+export default SignUpContainer;

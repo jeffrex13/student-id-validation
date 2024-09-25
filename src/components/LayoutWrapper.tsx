@@ -8,22 +8,22 @@ import { ThemeProvider } from '@/app/providers';
 
 export default function LayoutWrapper({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const isLoginPage = pathname === '/login';
+  const isAuthPage = pathname === '/login' || pathname === '/signup';
 
   return (
     <div className="flex h-screen">
       <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          // enableSystem
-          disableTransitionOnChange
-        >
-      {!isLoginPage && <Sidebar />}
+        attribute="class"
+        defaultTheme="dark"
+        enableSystem
+        disableTransitionOnChange
+      >
+        {!isAuthPage && <Sidebar />}
 
-      <main className="flex-1 overflow-y-auto">
-        {!isLoginPage && <AppBar />}
-        {children}
-      </main>
+        <main className="flex-1 overflow-y-auto">
+          {!isAuthPage && <AppBar />}
+          {children}
+        </main>
       </ThemeProvider>
     </div>
   );

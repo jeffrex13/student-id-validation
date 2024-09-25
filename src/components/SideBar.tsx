@@ -28,7 +28,7 @@ export function Sidebar({ className }: SidebarProps) {
         className={cn(
           'flex-grow',
           'transition-all duration-300 ease-in-out',
-          'border-r border-gray-300',
+          'border-r border-gray-300 dark:border-0 bg-card px-4',
           // isCollapsed ? 'w-20' : 'w-64',
           'w-56',
         )}
@@ -67,7 +67,7 @@ export function Sidebar({ className }: SidebarProps) {
                   className={cn(
                     'w-full justify-start text-base transition-all duration-300 ease-in-out h-10',
                     // isCollapsed && 'justify-center',
-                    pathname === item.href && 'bg-red-700 text-white',
+                    pathname === item.href && 'bg-rose-700 text-white',
                   )}
                 >
                   <item.icon className="h-5 w-5 flex-shrink-0 transition-all duration-300 ease-in-out" />
