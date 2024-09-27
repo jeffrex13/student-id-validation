@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import './globals.css'; // Adjust the path as necessary
 import LayoutWrapper from '@/components/LayoutWrapper';
-import { AuthProvider } from './contexts/authContext';
+// import { AuthProvider } from './contexts/authContext';
 // import { ThemeProvider } from './providers';
 
 const inter = Montserrat({ subsets: ['latin'] });
@@ -22,9 +22,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <main className="flex-1">
-          <AuthProvider>
-            <LayoutWrapper>{children}</LayoutWrapper>
-          </AuthProvider>
+          {/* <AuthProvider> */}
+          <LayoutWrapper>{children}</LayoutWrapper>
+          {/* </AuthProvider> */}
         </main>
       </body>
     </html>

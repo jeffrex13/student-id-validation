@@ -1,34 +1,38 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import { useRouter } from 'next/navigation';
 
 type User = {
-  username: string;
-  password: string;
+  username?: string; // Made optional to accommodate both contexts
+  name?: string; // Add other user properties as needed
   token?: string;
-  // Add other user properties as needed
+  password?: string;
 };
 
 type AuthContextType = {
   user: User | null;
-  login: ({
-    username,
-    password,
-  }: User) => Promise<{ success: boolean; message: string }>;
+  login: (userData: User) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    // Check for existing user session on component mount
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -39,21 +43,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API}/auth/login`,
-        {
-          username,
-          password,
-        },
+        { username, password },
       );
 
-      // Assuming the token is in response.data.token
       const token = response.data.token;
       const decodedToken = jwtDecode<User>(token);
 
-      // Store the decoded token and the original token in the user state and localStorage
-      const userWithToken = { ...decodedToken, token };
+      const userWithToken = { ...decodedToken, token, username }; // Merge both contexts
       setUser(userWithToken);
-      console.log(user);
       localStorage.setItem('user', JSON.stringify(userWithToken));
+      router.push('/');
 
       return { success: true, message: 'Login successful' };
     } catch (error) {
@@ -74,6 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    router.push('/login');
   };
 
   return (

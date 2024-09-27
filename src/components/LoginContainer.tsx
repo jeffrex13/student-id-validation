@@ -14,10 +14,11 @@ import React, { useState } from 'react';
 
 import Logo from '../../public/images/logo.png';
 import Link from 'next/link';
-import { useAuth } from '@/app/contexts/authContext';
+import { login } from '@/app/actions/auth';
+// import { useAuth } from '@/app/contexts/authContext';
 
 const LoginContainer = () => {
-  const { login } = useAuth();
+  // const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -30,10 +31,17 @@ const LoginContainer = () => {
     setIsLoading(true);
     setError(null);
 
-    const result = await login({ username, password });
-    setIsLoading(false);
+    try {
+      const result = await login({ username, password });
+      setIsLoading(false);
 
-    console.log(result);
+      if (!result.success) {
+        setError(result.message);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      setError('An error occurred. Please try again.');
+    }
   };
 
   return (
@@ -99,7 +107,7 @@ const LoginContainer = () => {
           >
             {isLoading ? <Loader2 className="animate-spin" /> : 'Login'}
           </Button>
-          {error && <p>{error}</p>}
+          {error && <p className="text-sm text-red-600 mx-auto">{error}</p>}
           <div className="flex justify-center">
             <p className="text-xs text-gray-500">
               Don&apos;t have an account?{' '}

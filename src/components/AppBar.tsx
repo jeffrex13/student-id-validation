@@ -13,16 +13,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { LogOut, User } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
+// import { useAuth } from '@/app/contexts/authContext';
 
 interface AppBarProps {
   userName?: string;
 }
 
 export default function AppBar({ userName }: AppBarProps) {
+  // const { logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = () => {
     setIsOpen(false);
+    // logout();
   };
 
   return (
