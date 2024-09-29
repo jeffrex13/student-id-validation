@@ -15,10 +15,12 @@ import React, { useState } from 'react';
 import Logo from '../../public/images/logo.png';
 import Link from 'next/link';
 import { login } from '@/app/actions/auth';
+import { useRouter } from 'next/navigation';
 // import { useAuth } from '@/app/contexts/authContext';
 
 const LoginContainer = () => {
   // const { login } = useAuth();
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -37,6 +39,8 @@ const LoginContainer = () => {
 
       if (!result.success) {
         setError(result.message);
+      } else {
+        router.push('/');
       }
     } catch (error) {
       setIsLoading(false);

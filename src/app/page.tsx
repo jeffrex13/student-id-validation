@@ -1,13 +1,13 @@
-import { redirect } from 'next/navigation';
-import { getUser } from './actions/auth';
+// import { redirect } from 'next/navigation';
+// import { getUser } from './actions/auth';
 import HomePage from './home/page';
 
 export default async function Home() {
-  const data = await getUser();
+  // const data = await getUser();
 
-  if (!data || data.token === '') {
-    redirect('/login');
-  }
+  // if (!data || data.token === '') {
+  //   redirect('/login');
+  // }
 
   return (
     <div className="flex flex-col items-center justify-items-center font-[family-name:var(--font-geist-sans)]">

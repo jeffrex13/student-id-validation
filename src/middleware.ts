@@ -7,8 +7,6 @@ export function middleware(request: NextRequest) {
   // Retrieve the user cookie which stores the token in the format: { token: 'sampletoken' }
   const userCookie = request.cookies.get('user')?.value;
 
-  console.log('middleware triggered');
-
   // List of protected routes
   const protectedRoutes = ['/'];
 
@@ -16,21 +14,22 @@ export function middleware(request: NextRequest) {
     !userCookie &&
     protectedRoutes.some((route) => request.nextUrl.pathname.startsWith(route))
   ) {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   let token: string | undefined;
   try {
     // Parse the user cookie to extract the token
     const parsedUser = JSON.parse(userCookie!);
+    console.log(parsedUser);
     token = parsedUser.token;
   } catch (error) {
     // If parsing fails or token is missing, redirect to home
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   if (!token) {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   let userData: any;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,19 +13,39 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { LogOut, User } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
-// import { useAuth } from '@/app/contexts/authContext';
+import { getUser, logout } from '@/app/actions/auth';
+import { useRouter } from 'next/navigation';
 
-interface AppBarProps {
-  userName?: string;
-}
-
-export default function AppBar({ userName }: AppBarProps) {
+export default function AppBar() {
   // const { logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+
+  const [userName, setUserName] = useState<string | undefined>('');
+
+  useEffect(() => {
+    // const cookieValue = Cookies.get('user'); // get the 'user' cookie
+    // if (cookieValue) {
+    //   setUserCookie(cookieValue);
+    // }
+    const getUserData = async () => {
+      await getUser()
+        .then((res) => {
+          console.log(res);
+          setUserName(res?.userName);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+
+    getUserData();
+  }, []);
 
   const handleLogout = () => {
     setIsOpen(false);
-    // logout();
+    logout();
+    router.push('/login');
   };
 
   return (

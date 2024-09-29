@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import './globals.css'; // Adjust the path as necessary
 import LayoutWrapper from '@/components/LayoutWrapper';
+import { Toaster } from '@/components/ui/toaster';
 // import { AuthProvider } from './contexts/authContext';
 // import { ThemeProvider } from './providers';
 
@@ -24,6 +25,7 @@ export default function RootLayout({
         <main className="flex-1">
           {/* <AuthProvider> */}
           <LayoutWrapper>{children}</LayoutWrapper>
+          <Toaster />
           {/* </AuthProvider> */}
         </main>
       </body>

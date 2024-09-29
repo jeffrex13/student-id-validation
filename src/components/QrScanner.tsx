@@ -19,7 +19,7 @@ export default function QRScanner({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const controlsRef = useRef<IScannerControls | null>(null);
 
-  console.log(isScanning);
+  // console.log(isScanning);
 
   // useEffect(() => {
   //   const codeReader = new BrowserQRCodeReader();

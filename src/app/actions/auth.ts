@@ -57,6 +57,11 @@ export const login = async ({ username, password }: User) => {
   }
 };
 
+export const logout = async () => {
+  cookies().delete('user');
+  return { success: true, message: 'Logout successful' };
+};
+
 export async function getAuthToken() {
   const cookieStore = cookies();
   const sessionCookie = cookieStore.get('accessToken') || { value: '' };
