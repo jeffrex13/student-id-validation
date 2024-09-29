@@ -26,11 +26,10 @@ export default function AppBar() {
     const getUserData = async () => {
       await getUser()
         .then((res) => {
-          console.log(res);
           setUserName(res?.userName);
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
         });
     };
 

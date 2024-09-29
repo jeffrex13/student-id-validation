@@ -7,6 +7,7 @@ import QRScanner from '@/components/QrScanner';
 import { IdCard, ScanLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import CustomDialog from './CustomDialog';
+import { useToast } from '@/hooks/use-toast';
 
 const studentList = [
   {
@@ -27,6 +28,8 @@ const studentList = [
 ];
 
 export default function ScannerContainer() {
+  const { toast } = useToast();
+
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [scannedData, setScannedData] = useState<string | null>(null);
   const [matchedStudent, setMatchedStudent] = useState<{
@@ -43,16 +46,36 @@ export default function ScannerContainer() {
 
     const student = studentList.find((student) => student.tup_id === data);
     if (student) {
+      toast({
+        title: 'Success',
+        description: 'ID successfully scanned!',
+        variant: 'default',
+        duration: 3000, // Auto-close after 5 seconds
+      });
       setMatchedStudent(student);
       setOpenValidateDialog(true);
     } else {
       setMatchedStudent(null);
+      toast({
+        title: 'Error',
+        description: 'Something went wrong. Please try again.',
+        variant: 'destructive',
+        duration: 3000, // Auto-close after 5 seconds
+      });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleScanError = useCallback((error: any) => {
     console.error('Scan error:', error);
     setIsScanning(false);
+    toast({
+      title: 'Error',
+      description: 'Something went wrong. Please try again.',
+      variant: 'default',
+      duration: 3000, // Auto-close after 5 seconds
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   console.log('matchedStudent:', matchedStudent);
