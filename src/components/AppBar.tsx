@@ -17,17 +17,12 @@ import { getUser, logout } from '@/app/actions/auth';
 import { useRouter } from 'next/navigation';
 
 export default function AppBar() {
-  // const { logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
   const [userName, setUserName] = useState<string | undefined>('');
 
   useEffect(() => {
-    // const cookieValue = Cookies.get('user'); // get the 'user' cookie
-    // if (cookieValue) {
-    //   setUserCookie(cookieValue);
-    // }
     const getUserData = async () => {
       await getUser()
         .then((res) => {

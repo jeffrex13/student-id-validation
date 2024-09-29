@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
   const userCookie = request.cookies.get('user')?.value;
 
   // List of protected routes
-  const protectedRoutes = ['/'];
+  const protectedRoutes = ['/', '/cafa', 'cie', 'cit', 'cla', 'coe', 'cos'];
 
   if (
     !userCookie &&
