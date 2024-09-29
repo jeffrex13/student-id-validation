@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
   try {
     // Parse the user cookie to extract the token
     const parsedUser = JSON.parse(userCookie!);
-    console.log(parsedUser);
+
     token = parsedUser.token;
   } catch (error) {
     // If parsing fails or token is missing, redirect to home
@@ -32,18 +32,18 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  let userData: any;
+  // let userData: any;
 
   // Check user role for admin routes
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    if (userData.role !== 'admin') {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
-  }
+  // if (request.nextUrl.pathname.startsWith('/admin')) {
+  //   if (userData.role !== 'admin') {
+  //     return NextResponse.redirect(new URL('/dashboard', request.url));
+  //   }
+  // }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/'],
+  matcher: ['/', '/cafa', '/cie', '/cit', '/cla', '/coe', '/cos'],
 };
