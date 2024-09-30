@@ -40,7 +40,7 @@ const LoginContainer = () => {
       if (!result.success) {
         setError(result.message);
       } else {
-        router.push('/');
+        router.push('/home');
       }
     } catch (error) {
       setIsLoading(false);

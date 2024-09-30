@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
   const userCookie = request.cookies.get('user')?.value;
 
   // List of protected routes
-  const protectedRoutes = ['/', '/cafa', 'cie', 'cit', 'cla', 'coe', 'cos'];
+  const protectedRoutes = ['/home', '/cafa', 'cie', 'cit', 'cla', 'coe', 'cos'];
 
   if (
     !userCookie &&
@@ -45,5 +45,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/cafa', '/cie', '/cit', '/cla', '/coe', '/cos'],
+  matcher: ['/home', '/cafa', '/cie', '/cit', '/cla', '/coe', '/cos'],
 };

@@ -1,31 +1,46 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useCallback, useEffect } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import QRScanner from '@/components/QrScanner';
 import { IdCard, ScanLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import CustomDialog from './CustomDialog';
 import { useToast } from '@/hooks/use-toast';
+import { getUser } from '@/app/actions/auth';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
-const studentList = [
-  {
-    name: 'User A',
-    tup_id: 'TUPM-21-7974',
-    school_year: '2021',
-  },
-  {
-    name: 'User B',
-    tup_id: 'TUPM-21-1342',
-    school_year: '2021',
-  },
-  {
-    name: 'User C',
-    tup_id: 'TUPM-21-2891',
-    school_year: '2021',
-  },
-];
+// const studentList = [
+//   {
+//     name: 'User A',
+//     tup_id: 'TUPM-21-7974',
+//     school_year: '2021',
+//   },
+//   {
+//     name: 'User B',
+//     tup_id: 'TUPM-21-1342',
+//     school_year: '2021',
+//   },
+//   {
+//     name: 'User C',
+//     tup_id: 'TUPM-21-2891',
+//     school_year: '2021',
+//   },
+// ];
+
+type Student = {
+  name: string;
+  tup_id: string;
+  school_year: string;
+};
 
 export default function ScannerContainer() {
   const { toast } = useToast();
@@ -39,12 +54,22 @@ export default function ScannerContainer() {
   } | null>(null);
   const [openValidateDialog, setOpenValidateDialog] = useState<boolean>(false);
   const [actionType, setActionType] = useState<'validate' | 'scan'>('scan');
+  const [userDetails, setUserDetails] = useState<any | undefined>(undefined);
+  const [pageLoad, setPageLoad] = useState<boolean>(true);
+  const [studentList, setStudentList] = useState<Student[]>([
+    {
+      name: '',
+      tup_id: '',
+      school_year: '',
+    },
+  ]);
+  const router = useRouter();
 
   const handleScanComplete = useCallback((data: string) => {
     setScannedData(data);
     setIsScanning(false);
-
     const student = studentList.find((student) => student.tup_id === data);
+
     if (student) {
       toast({
         title: 'Success',
@@ -71,27 +96,69 @@ export default function ScannerContainer() {
     setIsScanning(false);
     toast({
       title: 'Error',
-      description: 'Something went wrong. Please try again.',
+      description: `Something went wrong. ${error} Please try again.`,
       variant: 'default',
       duration: 3000, // Auto-close after 5 seconds
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log('matchedStudent:', matchedStudent);
-
   const toggleScanning = (action: string) => {
     setIsScanning((prev) => !prev);
     setActionType(action as 'validate' | 'scan');
   };
 
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const res = await getUser();
+        setUserDetails(res?.userName);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setPageLoad(false);
+      }
+    };
+
+    getUserData();
+  }, []);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API}/student`,
+        );
+        setStudentList(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchStudents();
+  }, []);
+
+  // console.log('studentList:', studentList);
+
   return (
-    <div>
+    <div className="max-h-screen max-w-screen">
+      {!pageLoad && !userDetails && (
+        <Button
+          className="absolute top-4 right-4"
+          onClick={() => router.push('/login')}
+        >
+          Login
+        </Button>
+      )}
       <Card className="container mx-auto p-4 max-w-lg w-[32rem] shadow-xl">
-        <CardHeader>
+        <CardHeader className="mb-2">
           <CardTitle className="text-2xl font-semibold text-center">
             STUDENT ID VALIDATION
           </CardTitle>
+          <CardDescription className="text-center">
+            Place the student ID&apos;s QR code directly in front of the scanner
+            to ensure a more accurate scan.
+          </CardDescription>
         </CardHeader>
         <CardContent className={'flex flex-col items-center gap-4'}>
           {!isScanning && (

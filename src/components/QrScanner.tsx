@@ -14,7 +14,7 @@ export default function QRScanner({
   onScanComplete,
   onScanError,
 }: QRScannerProps) {
-  const [scannedData, setScannedData] = useState<string | null>(null);
+  // const [scannedData, setScannedData] = useState<string | null>(null);
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const controlsRef = useRef<IScannerControls | null>(null);
@@ -93,7 +93,7 @@ export default function QRScanner({
   };
 
   const handleScan = (decodedText: string) => {
-    setScannedData(decodedText);
+    // setScannedData(decodedText);
     onScanComplete(decodedText);
   };
 
@@ -104,7 +104,7 @@ export default function QRScanner({
     }
   };
 
-  console.log(scannedData);
+  // console.log(scannedData);
 
   return (
     <div>
