@@ -9,7 +9,9 @@ import { ThemeProvider } from '@/app/providers';
 export default function LayoutWrapper({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isAuthPage =
-    pathname === '/login' || pathname === '/signup' || pathname === '/';
+    pathname === '/login' ||
+    pathname === '/signup' ||
+    pathname === '/student-scan';
 
   return (
     <div className="flex h-screen">

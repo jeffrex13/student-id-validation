@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BrowserQRCodeReader, IScannerControls } from '@zxing/browser';
 
 interface QRScannerProps {
@@ -14,27 +14,9 @@ export default function QRScanner({
   onScanComplete,
   onScanError,
 }: QRScannerProps) {
-  // const [scannedData, setScannedData] = useState<string | null>(null);
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const controlsRef = useRef<IScannerControls | null>(null);
-
-  // console.log(isScanning);
-
-  // useEffect(() => {
-  //   const codeReader = new BrowserQRCodeReader();
-
-  //   if (isScanning) {
-  //     startScanning(codeReader);
-  //   } else {
-  //     stopScanning();
-  //   }
-
-  //   return () => {
-  //     stopScanning();
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isScanning]);
 
   useEffect(() => {
     const codeReader = new BrowserQRCodeReader();
@@ -82,6 +64,9 @@ export default function QRScanner({
     if (controlsRef.current) {
       controlsRef.current.stop();
       controlsRef.current = null;
+      console.log('Scanner stopped.');
+    } else {
+      console.log('Scanner is not running or paused.');
     }
     if (mediaStream) {
       mediaStream.getTracks().forEach((track) => track.stop());
@@ -93,7 +78,6 @@ export default function QRScanner({
   };
 
   const handleScan = (decodedText: string) => {
-    // setScannedData(decodedText);
     onScanComplete(decodedText);
   };
 
@@ -103,8 +87,6 @@ export default function QRScanner({
       onScanError(err);
     }
   };
-
-  // console.log(scannedData);
 
   return (
     <div>
