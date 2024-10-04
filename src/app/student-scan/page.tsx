@@ -1,7 +1,15 @@
 import ScannerContainer from '@/components/ScannerContainer';
 import React from 'react';
+import { getUser } from '../actions/auth';
+import { redirect } from 'next/navigation';
 
-const StudentScanPage = () => {
+const StudentScanPage = async () => {
+  const data = await getUser();
+
+  if (data) {
+    redirect('/');
+  }
+
   return (
     <div className="relative">
       {/* Blurred Background */}
