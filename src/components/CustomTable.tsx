@@ -171,12 +171,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronsUpDown, User } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import Image1 from '../../public/images/test-image.png';
-import Image2 from '../../public/images/test-image1.png';
-import Image3 from '../../public/images/test-image2.png';
-import Image4 from '../../public/images/test-image3.png';
+// import Image1 from '../../public/images/test-image.png';
+// import Image2 from '../../public/images/test-image1.png';
+// import Image3 from '../../public/images/test-image2.png';
+// import Image4 from '../../public/images/test-image3.png';
 
 import Image from 'next/image';
 
@@ -209,7 +209,7 @@ export default function CustomDataTable({
   });
   const [currentPage, setCurrentPage] = useState(1);
 
-  const ImageArray = [Image1, Image2, Image3, Image4];
+  const ImageArray: string[] = [];
 
   const handleSort = (column: keyof DataItem) => {
     setSortState((prevState) => ({
@@ -283,7 +283,9 @@ export default function CustomDataTable({
                       className="w-12 h-12"
                     />
                   ) : (
-                    'N/A'
+                    <div className="w-12 h-12 bg-gray-200 flex items-center justify-center rounded-full p-1">
+                      <User className="w-12 h-12" />
+                    </div>
                   )}
                 </TableCell>
                 <TableCell>{item.tup_id || 'N/A'}</TableCell>

@@ -16,6 +16,7 @@ import Logo from '../../public/images/logo.png';
 // import Link from 'next/link';
 import { login } from '@/app/actions/auth';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 // import { useAuth } from '@/app/contexts/authContext';
 
 const LoginContainer = () => {
@@ -123,14 +124,14 @@ const LoginContainer = () => {
             >
               {isLoading ? <Loader2 className="animate-spin" /> : 'Login'}
             </Button>
-            {/* <div className="flex justify-center">
-            <p className="text-xs text-gray-500">
-              Don&apos;t have an account?{' '}
-              <Link href="/signup" className="text-rose-600">
-                Create account
-              </Link>
-            </p>
-          </div> */}
+            <div className="flex justify-center">
+              <p className="text-xs text-gray-500">
+                Don&apos;t have an account?{' '}
+                <Link href="/signup" className="text-rose-600">
+                  Create account
+                </Link>
+              </p>
+            </div>
           </form>
         </CardContent>
       </Card>

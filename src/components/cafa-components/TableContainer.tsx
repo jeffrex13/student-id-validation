@@ -29,15 +29,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
+import { useToast } from '@/hooks/use-toast';
 
 export default function TableContainer() {
+  const { toast } = useToast();
   const [studentList, setStudentList] = useState<any>([]);
   const [showFileUpload, setShowFileUpload] = useState(false);
   // const [file, setFile] = useState(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    // Handle the uploaded files here
-    console.log(acceptedFiles);
     // You can process the files or send them to your server here
     acceptedFiles.forEach((file) => {
       const fileType = file.type;
@@ -51,6 +51,7 @@ export default function TableContainer() {
         alert('Please upload a valid CSV or XLSX file.');
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const processFile = async (file: File) => {
@@ -79,9 +80,22 @@ export default function TableContainer() {
               },
             },
           );
+          refreshData();
+          toast({
+            title: 'Success',
+            description: 'File uploaded successfully!',
+            variant: 'default',
+            duration: 3000,
+          });
           console.log('File uploaded successfully:', response.data);
         } catch (error) {
           console.error('Error uploading file:', error);
+          toast({
+            title: 'Error',
+            description: 'Error uploading file. Please try again.',
+            variant: 'destructive',
+            duration: 3000,
+          });
         }
       } else {
         console.error('File reading failed: result is null');
@@ -101,19 +115,7 @@ export default function TableContainer() {
     multiple: true,
   });
 
-  const handleSingleAdd = () => {
-    setShowFileUpload(false);
-    // Implement single add logic here
-    console.log('Single add selected');
-  };
-
-  const handleMultipleAdd = () => {
-    setShowFileUpload(true);
-    // Implement multiple add logic here
-    console.log('Multiple add selected');
-  };
-
-  useEffect(() => {
+  const refreshData = () => {
     const fetchStudents = async () => {
       try {
         const response = await axios.get(
@@ -126,6 +128,39 @@ export default function TableContainer() {
     };
 
     fetchStudents();
+  };
+
+  const handleSingleAdd = () => {
+    setShowFileUpload(false);
+    // Implement single add logic here
+    console.log('Single add selected');
+  };
+
+  const handleMultipleAdd = () => {
+    setShowFileUpload(true);
+    // Implement multiple add logic here
+  };
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API}/student/cafa`,
+        );
+        setStudentList(response.data);
+      } catch (error) {
+        console.error(error);
+        toast({
+          title: 'Error',
+          description: 'Error fetching students. Please try again.',
+          variant: 'destructive',
+          duration: 3000,
+        });
+      }
+    };
+
+    fetchStudents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -165,6 +200,8 @@ export default function TableContainer() {
           </Button>
         </div>
       </div>
+
+      {/* Table component */}
       <CustomDataTable data={studentList} itemsPerPage={5} />
 
       <Dialog open={showFileUpload} onOpenChange={setShowFileUpload}>
