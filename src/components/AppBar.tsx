@@ -36,14 +36,23 @@ export default function AppBar() {
     getUserData();
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsOpen(false);
-    logout();
-    router.push('/login');
+    const response = await logout();
+    if (response.success) {
+      // Clear user state
+      setUserName(undefined); // or set it to an empty string
+      // Optionally, you can also clear other user-related states if needed
+      // Redirect to login after logout
+      router.push('/login');
+    } else {
+      // Handle logout error if needed
+      console.error('Logout failed:', response.message);
+    }
   };
 
   return (
-    <div className="flex items-center justify-end p-4 gap-4">
+    <div className="flex items-center justify-end p-4 gap-4 bg-white border-b border-gray-200">
       {/* <ThemeToggle /> */}
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>

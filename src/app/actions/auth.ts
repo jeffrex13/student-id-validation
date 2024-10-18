@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 // import jwt from 'jsonwebtoken';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
-import { redirect } from 'next/navigation';
+// import { redirect } from 'next/navigation';
 
 type TokenProps = {
   userId: string;
@@ -60,7 +60,7 @@ export const login = async ({ username, password }: User) => {
 
 export const logout = async () => {
   cookies().delete('user');
-  redirect('/login');
+  // redirect('/login');
   return { success: true, message: 'Logout successful' };
 };
 
