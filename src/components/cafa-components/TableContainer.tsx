@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import CustomDataTable from '../CustomTable';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
@@ -32,12 +33,62 @@ import {
 export default function TableContainer() {
   const [studentList, setStudentList] = useState<any>([]);
   const [showFileUpload, setShowFileUpload] = useState(false);
+  // const [file, setFile] = useState(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Handle the uploaded files here
     console.log(acceptedFiles);
     // You can process the files or send them to your server here
+    acceptedFiles.forEach((file) => {
+      const fileType = file.type;
+      if (
+        fileType === 'text/csv' ||
+        fileType ===
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      ) {
+        processFile(file);
+      } else {
+        alert('Please upload a valid CSV or XLSX file.');
+      }
+    });
   }, []);
+
+  const processFile = async (file: File) => {
+    // Specify the type of file
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      if (e.target?.result) {
+        // Check if e.target.result is not null
+        const data = new Uint8Array(e.target.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        // Process the workbook as needed
+        console.log(workbook);
+
+        const formData = new FormData();
+        formData.append('file', file); // Append the file to the FormData
+        formData.append('course', 'cafa'); // Append the file type to the FormData
+
+        try {
+          // Make the API call to upload the file
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_API}/student/upload`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            },
+          );
+          console.log('File uploaded successfully:', response.data);
+        } catch (error) {
+          console.error('Error uploading file:', error);
+        }
+      } else {
+        console.error('File reading failed: result is null');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
