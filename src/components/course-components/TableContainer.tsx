@@ -31,7 +31,11 @@ import {
 } from '../ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 
-export default function TableContainer() {
+interface TableContainerProps {
+  course: string;
+}
+
+export default function TableContainer({ course }: TableContainerProps) {
   const { toast } = useToast();
   const [studentList, setStudentList] = useState<any>([]);
   const [showFileUpload, setShowFileUpload] = useState(false);
@@ -67,7 +71,7 @@ export default function TableContainer() {
 
         const formData = new FormData();
         formData.append('file', file); // Append the file to the FormData
-        formData.append('course', 'cafa'); // Append the file type to the FormData
+        formData.append('course', course); // Append the file type to the FormData
 
         try {
           // Make the API call to upload the file
@@ -119,7 +123,7 @@ export default function TableContainer() {
     const fetchStudents = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API}/student/cafa`,
+          `${process.env.NEXT_PUBLIC_API}/student/${course}`,
         );
         setStudentList(response.data);
       } catch (error) {
@@ -145,7 +149,7 @@ export default function TableContainer() {
     const fetchStudents = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API}/student/cafa`,
+          `${process.env.NEXT_PUBLIC_API}/student/${course}`,
         );
         setStudentList(response.data);
       } catch (error) {
@@ -161,7 +165,7 @@ export default function TableContainer() {
 
     fetchStudents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [course]);
 
   return (
     <Card className="container mx-auto p-6">
@@ -190,7 +194,7 @@ export default function TableContainer() {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleMultipleAdd}>
                 <Users className="mr-2 h-4 w-4" />
-                Bulk Add
+                Multiple Add
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -204,7 +208,6 @@ export default function TableContainer() {
       {/* Table component */}
       <CustomDataTable data={studentList} itemsPerPage={5} />
 
-      {/* Bulk Add Dialog */}
       <Dialog open={showFileUpload} onOpenChange={setShowFileUpload}>
         <DialogContent>
           <DialogHeader>

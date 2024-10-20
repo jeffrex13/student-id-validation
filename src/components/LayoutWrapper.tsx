@@ -23,7 +23,7 @@ export default function LayoutWrapper({ children }: { children: ReactNode }) {
       >
         {!isAuthPage && <Sidebar />}
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto bg-gray-100">
           {!isAuthPage && <AppBar />}
           {children}
         </main>
