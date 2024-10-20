@@ -1,4 +1,4 @@
-import TableContainer from '@/components/cafa-components/TableContainer';
+import TableContainer from '@/components/course-components/TableContainer';
 import React from 'react';
 
 const page = () => {
@@ -7,7 +7,7 @@ const page = () => {
       <p className="text-2xl font-semibold text-center mb-8">
         COLLEGE OF ARCHITECTURE AND FINE ARTS
       </p>
-      <TableContainer />
+      <TableContainer course="cafa" />
     </div>
   );
 };
