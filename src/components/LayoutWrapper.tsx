@@ -17,7 +17,7 @@ export default function LayoutWrapper({ children }: { children: ReactNode }) {
     <div className="flex h-screen">
       <ThemeProvider
         attribute="class"
-        defaultTheme="dark"
+        defaultTheme="light"
         enableSystem
         disableTransitionOnChange
       >
