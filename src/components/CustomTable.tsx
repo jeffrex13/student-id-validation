@@ -18,12 +18,14 @@ import { QRCodeSVG } from 'qrcode.react';
 // import Image4 from '../../public/images/test-image3.png';
 
 import Image from 'next/image';
+import { Badge } from './ui/badge';
 
 type DataItem = {
   _id: number;
   name: string;
   school_year: string;
   tup_id: string;
+  isValid: boolean;
 };
 
 type SortDirection = 'asc' | 'desc' | null;
@@ -95,7 +97,7 @@ export default function CustomDataTable({
         <Table className="">
           <TableHeader className="">
             <TableRow className="">
-              {['image', 'ID', 'name', 'school year', 'QR Code'].map(
+              {['image', 'ID', 'name', 'school year', 'status', 'qr Code'].map(
                 (column) => (
                   <TableHead key={column} className="font-medium">
                     <Button
@@ -131,6 +133,17 @@ export default function CustomDataTable({
                   <TableCell>{item.tup_id || 'N/A'}</TableCell>
                   <TableCell>{item.name || 'N/A'}</TableCell>
                   <TableCell>{item.school_year || 'N/A'}</TableCell>
+                  <TableCell>
+                    {item.isValid ? (
+                      <Badge className="bg-green-500 hover:bg-green-600 text-white rounded-full">
+                        Valid
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-red-500 hover:bg-red-600 text-white rounded-full">
+                        Invalid
+                      </Badge>
+                    )}
+                  </TableCell>
                   <TableCell className="text-center">
                     <QRCodeSVG value={item.tup_id} size={40} className="ml-6" />
                   </TableCell>
