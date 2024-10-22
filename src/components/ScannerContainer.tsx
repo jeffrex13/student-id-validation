@@ -18,9 +18,11 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
 type Student = {
+  _id: string;
   name: string;
   tup_id: string;
   school_year: string;
+  isValid: boolean;
 };
 
 export default function ScannerContainer() {
