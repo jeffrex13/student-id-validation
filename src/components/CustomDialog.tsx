@@ -65,9 +65,11 @@ const CustomDialog = ({
         `${process.env.NEXT_PUBLIC_API}/student/${studentData._id}`,
         { isValid: true },
       );
-      console.log('result', result);
+      setCurrentStudentData({
+        ...currentStudentData,
+        isValid: result.data.updatedStudent.isValid,
+      });
       setShowValidateConfirmation(false);
-      setOpen(false); // Close the main dialog after successful validation
     } catch (error) {
       console.error('Error validating student:', error);
     }
@@ -123,20 +125,25 @@ const CustomDialog = ({
                   <User className="w-10 h-10 text-gray-600" />
                 </div>
                 <div>
-                  <h2 className="font-semibold">{studentData.name}</h2>
+                  <h2 className="font-semibold">{currentStudentData.name}</h2>
                   <Badge
                     className={cn(
                       'bg-green-500 hover:bg-green-600 text-white rounded-full',
-                      !studentData.isValid && 'bg-red-500 hover:bg-red-600',
+                      !currentStudentData.isValid &&
+                        'bg-red-500 hover:bg-red-600',
                     )}
                   >
-                    {studentData.isValid ? 'Validated' : 'Not Validated'}
+                    {currentStudentData.isValid ? 'Validated' : 'Not Validated'}
                   </Badge>
                 </div>
               </div>
               <div className="flex justify-center items-center">
-                {studentData.tup_id && (
-                  <QRCodeSVG value={studentData.tup_id} size={80} level="H" />
+                {currentStudentData.tup_id && (
+                  <QRCodeSVG
+                    value={currentStudentData.tup_id}
+                    size={80}
+                    level="H"
+                  />
                 )}
               </div>
             </div>
@@ -144,7 +151,9 @@ const CustomDialog = ({
             <div className="grid gap-4">
               <div className="grid grid-cols-3 items-center gap-4">
                 <p className="text-sm font-medium">Student ID:</p>
-                <p className="col-span-2 text-sm">{studentData.tup_id}</p>
+                <p className="col-span-2 text-sm">
+                  {currentStudentData.tup_id}
+                </p>
               </div>
               <div className="grid grid-cols-3 items-center gap-4">
                 <p className="text-sm font-medium">Name:</p>
