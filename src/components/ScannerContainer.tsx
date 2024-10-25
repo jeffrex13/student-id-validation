@@ -69,13 +69,12 @@ export default function ScannerContainer() {
   const handleScanError = useCallback(
     (error: any) => {
       console.error('Scan error:', error);
-      setIsScanning(false); // Ensure scanning is stopped on error
       toast({
         title: 'Error',
         description: `Something went wrong. ${
           error.message || error
         } Please try again.`,
-        variant: 'default',
+        variant: 'destructive',
         duration: 3000,
       });
     },

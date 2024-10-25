@@ -82,7 +82,7 @@ export default function QRScanner({
   };
 
   const handleError = (err: any) => {
-    if (err.name !== 'NotFoundException') {
+    if (err.name !== 'NotFoundException' && err.name !== 'e') {
       console.error('QR code parse error:', err);
       onScanError(err);
     }
