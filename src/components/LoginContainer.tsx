@@ -51,12 +51,19 @@ const LoginContainer = () => {
 
   return (
     <div className="max-h-screen max-w-screen">
-      <Button
+      {/* <Button
         className="absolute top-4 left-4 flex items-center gap-2"
         onClick={() => router.push('/student-scan')}
       >
         <ArrowLeft className="w-5 h-5" /> Scan ID
-      </Button>
+      </Button> */}
+      <Link href="/student-scan">
+        {' '}
+        {/* Use Link component for navigation */}
+        <Button className="absolute top-4 left-4 flex items-center gap-2">
+          <ArrowLeft className="w-5 h-5" /> Scan ID
+        </Button>
+      </Link>
       <Card className="w-[23rem] pb-2 shadow-xl">
         <CardHeader>
           <Image

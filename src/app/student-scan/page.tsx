@@ -11,7 +11,7 @@ const StudentScanPage = async () => {
   }
 
   return (
-    <div className="relative">
+    <div className="relative h-screen border z-10">
       {/* Blurred Background */}
       <div
         className="absolute inset-0 bg-cover bg-center"
@@ -26,7 +26,7 @@ const StudentScanPage = async () => {
       />
 
       {/* Content remains unaffected */}
-      <div className="flex flex-col justify-center items-center container mx-auto max-w-md h-screen z-10">
+      <div className="flex flex-col justify-center items-center container mx-auto max-w-md h-screen">
         <ScannerContainer />
       </div>
     </div>

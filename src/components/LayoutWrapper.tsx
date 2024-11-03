@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import { Sidebar } from './SideBar';
+import { Sidebar } from './sidebar/Sidebar';
 import AppBar from './AppBar';
 import { ThemeProvider } from '@/app/providers';
 
