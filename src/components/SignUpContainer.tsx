@@ -11,16 +11,17 @@ import {
 import Image from 'next/image';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, Loader2 } from 'lucide-react';
 import axios from 'axios'; // Add axios for API requests
 import { useToast } from '@/hooks/use-toast';
 
 import Logo from '../../public/images/logo.png';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const SignUpContainer = () => {
   const { toast } = useToast();
-
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -40,16 +41,23 @@ const SignUpContainer = () => {
         {
           username,
           password,
+          userType: 'Admin',
         },
       );
       toast({
         title: 'Success',
-        description: 'Your account has been created successfully!',
+        description:
+          'Your account has been created successfully! Redirecting to login page...',
         variant: 'default',
-        duration: 5000, // Auto-close after 5 seconds
+        duration: 3000,
       });
 
-      console.log('API response:', response.data);
+      if (response.status === 201) {
+        setTimeout(() => {
+          router.push('/login');
+          setLoading(false);
+        }, 3000);
+      }
     } catch (err: any) {
       console.error('API error:', err);
       const errorMessage = err.response?.data.message || 'Something went wrong';
@@ -58,9 +66,9 @@ const SignUpContainer = () => {
         title: 'Error',
         description: errorMessage,
         variant: 'destructive',
-        duration: 3000, // Auto-close after 3 seconds
+        duration: 3000,
       });
-    } finally {
+
       setLoading(false);
     }
   };
@@ -157,7 +165,11 @@ const SignUpContainer = () => {
             disabled={loading || confirmPassword !== password}
             className="w-full p-4 font-bold text-white rounded-lg mt-4"
           >
-            {loading ? 'Signing Up...' : 'Sign Up'}
+            {loading ? (
+              <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+            ) : (
+              'Sign Up'
+            )}
           </Button>
           <div className="flex justify-center">
             <p className="text-xs text-gray-500">

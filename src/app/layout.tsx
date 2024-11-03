@@ -6,6 +6,8 @@ import LayoutWrapper from '@/components/LayoutWrapper';
 import { Toaster } from '@/components/ui/toaster';
 // import { AuthProvider } from './contexts/authContext';
 // import { ThemeProvider } from './providers';
+import { NProgressProvider } from '@/components/NProgressProvider';
+import '@/styles/nprogress.css'; // Add this import
 
 const inter = Montserrat({ subsets: ['latin'] });
 
@@ -22,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <NProgressProvider />
         <main className="flex-1 ">
           {/* <AuthProvider> */}
           <LayoutWrapper>{children}</LayoutWrapper>
