@@ -30,6 +30,7 @@ import {
   DialogTitle,
 } from '../ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { Student } from '@/types';
 
 interface TableContainerProps {
   course: string;
@@ -145,6 +146,18 @@ export default function TableContainer({ course }: TableContainerProps) {
     // Implement multiple add logic here
   };
 
+  const handleView = (student: Student) => {
+    console.log('View selected for student:', student);
+  };
+
+  const handleEdit = (student: Student) => {
+    console.log('Edit selected for student:', student);
+  };
+
+  const handleDelete = (student: Student) => {
+    console.log('Delete selected for student:', student);
+  };
+
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -206,7 +219,13 @@ export default function TableContainer({ course }: TableContainerProps) {
       </div>
 
       {/* Table component */}
-      <CustomDataTable data={studentList} itemsPerPage={5} />
+      <CustomDataTable
+        data={studentList}
+        itemsPerPage={5}
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
       <Dialog open={showFileUpload} onOpenChange={setShowFileUpload}>
         <DialogContent>

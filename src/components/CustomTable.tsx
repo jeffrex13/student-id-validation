@@ -10,7 +10,16 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronUp, ChevronsUpDown, User } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronUp,
+  ChevronsUpDown,
+  User,
+  Pencil,
+  Trash,
+  Eye,
+  MoreVertical,
+} from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 // import Image1 from '../../public/images/test-image.png';
 // import Image2 from '../../public/images/test-image1.png';
@@ -19,31 +28,21 @@ import { QRCodeSVG } from 'qrcode.react';
 
 import Image from 'next/image';
 import { Badge } from './ui/badge';
-
-type DataItem = {
-  _id: number;
-  name: string;
-  school_year: string;
-  tup_id: string;
-  isValid: boolean;
-};
-
-type SortDirection = 'asc' | 'desc' | null;
-
-type SortState = {
-  column: keyof DataItem | null;
-  direction: SortDirection;
-};
-
-type CustomDataTableProps = {
-  data: DataItem[];
-  itemsPerPage?: number;
-};
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import { Student, SortState, CustomTableProps } from '@/types';
 
 export default function CustomDataTable({
   data,
   itemsPerPage = 5,
-}: CustomDataTableProps) {
+  onView,
+  onEdit,
+  onDelete,
+}: CustomTableProps) {
   const [sortState, setSortState] = useState<SortState>({
     column: null,
     direction: null,
@@ -52,7 +51,7 @@ export default function CustomDataTable({
 
   const ImageArray: string[] = [];
 
-  const handleSort = (column: keyof DataItem) => {
+  const handleSort = (column: keyof Student) => {
     setSortState((prevState) => ({
       column,
       direction:
@@ -80,7 +79,7 @@ export default function CustomDataTable({
   const endIndex = startIndex + itemsPerPage;
   const currentData = sortedData.slice(startIndex, endIndex);
 
-  const renderSortIcon = (column: keyof DataItem) => {
+  const renderSortIcon = (column: keyof Student) => {
     if (sortState.column !== column) {
       return <ChevronsUpDown className="ml-2 h-4 w-4" />;
     }
@@ -97,20 +96,26 @@ export default function CustomDataTable({
         <Table className="">
           <TableHeader className="">
             <TableRow className="">
-              {['image', 'ID', 'name', 'school year', 'status', 'qr Code'].map(
-                (column) => (
-                  <TableHead key={column} className="font-medium">
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSort(column as keyof DataItem)}
-                      className="flex items-center pl-4"
-                    >
-                      {column.charAt(0).toUpperCase() + column.slice(1)}
-                      {renderSortIcon(column as keyof DataItem)}
-                    </Button>
-                  </TableHead>
-                ),
-              )}
+              {[
+                'image',
+                'ID',
+                'name',
+                'school year',
+                'status',
+                'qr Code',
+                'actions',
+              ].map((column) => (
+                <TableHead key={column} className="font-medium">
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort(column as keyof Student)}
+                    className="flex items-center pl-4"
+                  >
+                    {column.charAt(0).toUpperCase() + column.slice(1)}
+                    {renderSortIcon(column as keyof Student)}
+                  </Button>
+                </TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -146,6 +151,39 @@ export default function CustomDataTable({
                   </TableCell>
                   <TableCell className="text-center">
                     <QRCodeSVG value={item.tup_id} size={40} className="ml-6" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => onView && onView(item)}
+                          className="cursor-pointer"
+                        >
+                          <Eye className="mr-2 h-4 w-4" />
+                          View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => onEdit && onEdit(item)}
+                          className="cursor-pointer"
+                        >
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => onDelete && onDelete(item)}
+                          className="cursor-pointer text-red-600"
+                        >
+                          <Trash className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))

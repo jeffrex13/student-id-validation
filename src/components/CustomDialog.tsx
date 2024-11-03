@@ -15,19 +15,7 @@ import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import axios from 'axios';
 import { cn } from '@/lib/utils';
-
-interface DialogProps {
-  studentData: {
-    _id: string;
-    name: string;
-    tup_id: string;
-    school_year: string;
-    isValid: boolean;
-  };
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  actionType?: 'validate' | 'scan';
-}
+import { DialogProps } from '@/types';
 
 const CustomDialog = ({
   studentData,
@@ -37,6 +25,7 @@ const CustomDialog = ({
 }: DialogProps) => {
   const [isEdit, setIsEdit] = useState(false);
   const [editStudentData, setEditStudentData] = useState({
+    _id: '',
     name: '',
     tup_id: '',
     school_year: '',
@@ -46,6 +35,7 @@ const CustomDialog = ({
     useState(false);
   const [showEditConfirmation, setShowEditConfirmation] = useState(false);
   const [currentStudentData, setCurrentStudentData] = useState({
+    _id: studentData._id,
     name: studentData.name,
     tup_id: studentData.tup_id,
     school_year: studentData.school_year,
@@ -85,6 +75,7 @@ const CustomDialog = ({
     } else {
       setIsEdit(true);
       setEditStudentData({
+        _id: studentData._id,
         name: studentData.name,
         school_year: studentData.school_year,
         tup_id: studentData.tup_id,
@@ -100,6 +91,7 @@ const CustomDialog = ({
     );
     console.log(result);
     setCurrentStudentData({
+      _id: result.data.updatedStudent._id,
       name: result.data.updatedStudent.name,
       tup_id: result.data.updatedStudent.tup_id,
       school_year: result.data.updatedStudent.school_year,
