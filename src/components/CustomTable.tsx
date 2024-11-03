@@ -189,7 +189,7 @@ export default function CustomDataTable({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center">
+                <TableCell colSpan={7} className="text-center py-4">
                   No data found
                 </TableCell>
               </TableRow>
