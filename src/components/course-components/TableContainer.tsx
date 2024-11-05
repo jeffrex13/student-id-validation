@@ -31,6 +31,7 @@ import {
 } from '../ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Student } from '@/types';
+import { Badge } from '../ui/badge';
 
 interface TableContainerProps {
   course: string;
@@ -40,6 +41,10 @@ export default function TableContainer({ course }: TableContainerProps) {
   const { toast } = useToast();
   const [studentList, setStudentList] = useState<any>([]);
   const [showFileUpload, setShowFileUpload] = useState(false);
+  const [showSingleAdd, setShowSingleAdd] = useState(false);
+  const [showView, setShowView] = useState(false);
+  const [studentDetails, setStudentDetails] = useState<Student | null>(null);
+  // const [showEdit, setShowEdit] = useState(false);
   // const [file, setFile] = useState(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -147,7 +152,9 @@ export default function TableContainer({ course }: TableContainerProps) {
   };
 
   const handleView = (student: Student) => {
-    console.log('View selected for student:', student);
+    // console.log('View selected for student:', student);
+    setStudentDetails(student);
+    setShowView(true);
   };
 
   const handleEdit = (student: Student) => {
@@ -230,7 +237,7 @@ export default function TableContainer({ course }: TableContainerProps) {
       <Dialog open={showFileUpload} onOpenChange={setShowFileUpload}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Student</DialogTitle>
+            <DialogTitle>Add List of Students</DialogTitle>
             <DialogDescription>
               Upload a file to add multiple students. Only .csv and .xlsx files
               are accepted.
@@ -258,6 +265,42 @@ export default function TableContainer({ course }: TableContainerProps) {
             )}
             <p className="mt-1 text-xs text-gray-500">
               Only .csv and .xlsx files are accepted
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Single Add Dialog */}
+      <Dialog open={showSingleAdd} onOpenChange={setShowSingleAdd}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Student</DialogTitle>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Dialog */}
+      <Dialog open={showView} onOpenChange={setShowView}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Details</DialogTitle>
+            <DialogDescription>View student details.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p>Name: {studentDetails?.name}</p>
+            <p>Email: {studentDetails?.school_year}</p>
+            <p>TUP ID: {studentDetails?.tup_id}</p>
+            <p>
+              Status:
+              {studentDetails?.isValid ? (
+                <Badge className="bg-green-500 hover:bg-green-600 text-white rounded-full ml-2">
+                  Valid
+                </Badge>
+              ) : (
+                <Badge className="bg-red-500 hover:bg-red-600 text-white rounded-full ml-2">
+                  Invalid
+                </Badge>
+              )}
             </p>
           </div>
         </DialogContent>
