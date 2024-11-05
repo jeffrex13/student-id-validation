@@ -13,6 +13,7 @@ import {
   FolderOutput,
   Plus,
   Search,
+  User,
   UserPlus,
   Users,
 } from 'lucide-react';
@@ -28,9 +29,13 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from '../ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Student } from '@/types';
+import { Badge } from '../ui/badge';
+import { Label } from '../ui/label';
+// import Image from 'next/image';
 
 interface TableContainerProps {
   course: string;
@@ -40,7 +45,19 @@ export default function TableContainer({ course }: TableContainerProps) {
   const { toast } = useToast();
   const [studentList, setStudentList] = useState<any>([]);
   const [showFileUpload, setShowFileUpload] = useState(false);
-  // const [file, setFile] = useState(null);
+  const [showSingleAdd, setShowSingleAdd] = useState(false);
+  const [showView, setShowView] = useState(false);
+  const [studentDetails, setStudentDetails] = useState<Student | null>(null);
+  const [showEdit, setShowEdit] = useState(false);
+  const [editFormData, setEditFormData] = useState<Student>({
+    _id: '',
+    name: '',
+    tup_id: '',
+    school_year: '',
+    isValid: false,
+  });
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  // const [imageFile, setImageFile] = useState<File | null>(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // You can process the files or send them to your server here
@@ -136,9 +153,8 @@ export default function TableContainer({ course }: TableContainerProps) {
   };
 
   const handleSingleAdd = () => {
-    setShowFileUpload(false);
+    setShowSingleAdd(true);
     // Implement single add logic here
-    console.log('Single add selected');
   };
 
   const handleMultipleAdd = () => {
@@ -147,15 +163,100 @@ export default function TableContainer({ course }: TableContainerProps) {
   };
 
   const handleView = (student: Student) => {
-    console.log('View selected for student:', student);
+    setStudentDetails(student);
+    setShowView(true);
   };
 
   const handleEdit = (student: Student) => {
-    console.log('Edit selected for student:', student);
+    setStudentDetails(student);
+    setShowEdit(true);
   };
 
   const handleDelete = (student: Student) => {
     console.log('Delete selected for student:', student);
+  };
+
+  const handleEditSubmit = async () => {
+    try {
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API}/student/${editFormData._id}`,
+        editFormData,
+      );
+
+      if (response.data) {
+        toast({
+          title: 'Success',
+          description: 'Student information updated successfully!',
+          variant: 'default',
+          duration: 3000,
+        });
+        setShowEdit(false);
+        refreshData(); // Refresh the table data
+      }
+    } catch (error) {
+      console.error('Error updating student:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update student information.',
+        variant: 'destructive',
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      // Check file size (e.g., max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: 'Error',
+          description: 'File size should be less than 5MB',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: 'Error',
+          description: 'Please select an image file',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Proceed with file processing
+      // setImageFile(file);
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setSelectedImage(base64String);
+      };
+
+      reader.onerror = () => {
+        toast({
+          title: 'Error',
+          description: 'Error reading file',
+          variant: 'destructive',
+        });
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setSelectedImage(null);
+    setShowSingleAdd(false); // or setShowEdit(false)
+  };
+
+  const handleCloseEditDialog = () => {
+    setSelectedImage(null);
+    setShowEdit(false);
   };
 
   useEffect(() => {
@@ -179,6 +280,20 @@ export default function TableContainer({ course }: TableContainerProps) {
     fetchStudents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [course]);
+
+  useEffect(() => {
+    if (studentDetails) {
+      setEditFormData({
+        _id: studentDetails._id,
+        name: studentDetails.name,
+        tup_id: studentDetails.tup_id,
+        school_year: studentDetails.school_year,
+        isValid: studentDetails.isValid,
+      });
+    }
+  }, [studentDetails]);
+
+  console.log(selectedImage);
 
   return (
     <Card className="container mx-auto p-6">
@@ -230,7 +345,7 @@ export default function TableContainer({ course }: TableContainerProps) {
       <Dialog open={showFileUpload} onOpenChange={setShowFileUpload}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Student</DialogTitle>
+            <DialogTitle>Add List of Students</DialogTitle>
             <DialogDescription>
               Upload a file to add multiple students. Only .csv and .xlsx files
               are accepted.
@@ -260,6 +375,202 @@ export default function TableContainer({ course }: TableContainerProps) {
               Only .csv and .xlsx files are accepted
             </p>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Single Add Dialog */}
+      <Dialog open={showSingleAdd} onOpenChange={handleCloseDialog}>
+        <DialogContent className="sm:max-w-[450px]">
+          <DialogHeader>
+            <DialogTitle>Add Student</DialogTitle>
+            <DialogDescription>
+              Add a single student to the course.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="mx-auto flex flex-col items-center">
+              <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
+                <User className="h-16 w-16 text-gray-500" />
+              </div>
+              <div className="mt-2">
+                <Input
+                  type="file"
+                  id="imagefile"
+                  name="imagefile"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-64"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-2 mx-4">
+              <Label htmlFor="tup_id" className="text-right">
+                TUP ID
+              </Label>
+              <Input id="tup_id" className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-2 mx-4">
+              <Label htmlFor="name" className="text-right">
+                Name
+              </Label>
+              <Input id="name" className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-2 mx-4">
+              <Label htmlFor="school_year" className="text-right">
+                School Year
+              </Label>
+              <Input id="school_year" className="col-span-3" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseDialog}>
+              Cancel
+            </Button>
+            <Button>Add Student</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Dialog */}
+      <Dialog open={showView} onOpenChange={setShowView}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Student Details</DialogTitle>
+            <DialogDescription>View student details.</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center justify-center gap-8">
+            <div>
+              {/* {editUserData.profile_photo ? (
+              <Image
+                src={photoPreview ?? editUserData.profile_photo}
+                alt="Instructor Profile Picture"
+                width={200}
+                height={200}
+                className="rounded-lg"
+              />
+            ) : ( */}
+              <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                <User className="h-16 w-16 text-gray-500" />
+              </div>
+              {/* )} */}
+            </div>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center gap-2">
+                <p className="font-semibold">Name:</p>
+                <p>{studentDetails?.name}</p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <p className="font-semibold">Email:</p>
+                <p>{studentDetails?.school_year}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold">TUP ID:</p>
+                <p>{studentDetails?.tup_id}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold">Status:</p>
+                {studentDetails?.isValid ? (
+                  <Badge className="bg-green-500 hover:bg-green-600 text-white rounded-full">
+                    Valid
+                  </Badge>
+                ) : (
+                  <Badge className="bg-red-500 hover:bg-red-600 text-white rounded-full">
+                    Not Valid
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={showEdit} onOpenChange={handleCloseEditDialog}>
+        <DialogContent className="sm:max-w-[450px]">
+          <DialogHeader>
+            <DialogTitle>Edit Student Information</DialogTitle>
+            <DialogDescription>
+              Make changes to the student&apos;s information here.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="mx-auto flex flex-col items-center">
+              <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
+                <User className="h-16 w-16 text-gray-500" />
+              </div>
+              <div className="mt-2">
+                <Input
+                  type="file"
+                  id="imagefile"
+                  name="imagefile"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-64"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="tup_id" className="text-right">
+                TUP ID
+              </Label>
+              <Input
+                id="tup_id"
+                value={editFormData.tup_id}
+                className="col-span-3"
+                disabled
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="name"
+                value={editFormData.name}
+                onChange={(e) =>
+                  setEditFormData({ ...editFormData, name: e.target.value })
+                }
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="school_year" className="text-right">
+                School Year
+              </Label>
+              <Input
+                id="school_year"
+                value={editFormData.school_year}
+                onChange={(e) =>
+                  setEditFormData({
+                    ...editFormData,
+                    school_year: e.target.value,
+                  })
+                }
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Status</Label>
+              <div className="col-span-3">
+                <Badge
+                  className={
+                    editFormData.isValid
+                      ? 'bg-green-500 hover:bg-green-600'
+                      : 'bg-red-500 hover:bg-red-600'
+                  }
+                >
+                  {editFormData.isValid ? 'Validated' : 'Not Validated'}
+                </Badge>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseEditDialog}>
+              Cancel
+            </Button>
+            <Button onClick={handleEditSubmit}>Save changes</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </Card>
