@@ -141,11 +141,11 @@ export default function CustomDataTable({
                   <TableCell>
                     {item.isValid ? (
                       <Badge className="bg-green-500 hover:bg-green-600 text-white rounded-full">
-                        Valid
+                        Validated
                       </Badge>
                     ) : (
                       <Badge className="bg-red-500 hover:bg-red-600 text-white rounded-full">
-                        Invalid
+                        Not Validated
                       </Badge>
                     )}
                   </TableCell>
