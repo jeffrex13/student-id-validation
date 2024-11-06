@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import CustomDataTable from '../CustomTable';
 import axios from 'axios';
@@ -36,6 +36,7 @@ import { Student } from '@/types';
 import { Badge } from '../ui/badge';
 import { Label } from '../ui/label';
 import Image from 'next/image';
+import { debounce } from 'lodash';
 // import Image from 'next/image';
 
 interface TableContainerProps {
@@ -59,6 +60,9 @@ export default function TableContainer({ course }: TableContainerProps) {
   });
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   // const [imageFile, setImageFile] = useState<File | null>(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // You can process the files or send them to your server here
@@ -174,7 +178,37 @@ export default function TableContainer({ course }: TableContainerProps) {
   };
 
   const handleDelete = (student: Student) => {
-    console.log('Delete selected for student:', student);
+    setStudentToDelete(student);
+    setShowDeleteConfirmation(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!studentToDelete) return;
+
+    try {
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_API}/student/${studentToDelete._id}`,
+      );
+      if (response.data) {
+        toast({
+          title: 'Success',
+          description: 'Student deleted successfully!',
+          variant: 'default',
+          duration: 3000,
+        });
+        setShowDeleteConfirmation(false);
+        setStudentToDelete(null);
+        refreshData();
+      }
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete student. Please try again.',
+        variant: 'destructive',
+        duration: 3000,
+      });
+    }
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -271,7 +305,7 @@ export default function TableContainer({ course }: TableContainerProps) {
     const fetchStudents = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API}/student/${course}`,
+          `${process.env.NEXT_PUBLIC_API}/student/${course}?search=${searchQuery}`,
         );
         setStudentList(response.data);
       } catch (error) {
@@ -287,7 +321,7 @@ export default function TableContainer({ course }: TableContainerProps) {
 
     fetchStudents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [course]);
+  }, [course, searchQuery]);
 
   useEffect(() => {
     if (studentDetails) {
@@ -303,6 +337,20 @@ export default function TableContainer({ course }: TableContainerProps) {
 
   console.log(selectedImage);
 
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((query: string) => {
+        setSearchQuery(query);
+      }, 500),
+    [],
+  );
+
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
   return (
     <Card className="container mx-auto p-6">
       <h1 className="text-2xl font-semibold mb-4">Student List</h1>
@@ -312,6 +360,7 @@ export default function TableContainer({ course }: TableContainerProps) {
             type="text"
             placeholder="Search Student..."
             className="pr-10"
+            onChange={(e) => debouncedSearch(e.target.value)}
           />
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         </div>
@@ -602,6 +651,32 @@ export default function TableContainer({ course }: TableContainerProps) {
               Cancel
             </Button>
             <Button onClick={handleEditSubmit}>Save changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={showDeleteConfirmation}
+        onOpenChange={setShowDeleteConfirmation}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm">
+            Are you sure you want to delete {studentToDelete?.name}? This action
+            cannot be undone.
+          </p>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteConfirmation(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
