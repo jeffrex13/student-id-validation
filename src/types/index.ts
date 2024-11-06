@@ -4,6 +4,7 @@ export interface Student {
   school_year: string;
   tup_id: string;
   isValid: boolean;
+  profile_image?: string;
 }
 
 export type SortDirection = 'asc' | 'desc' | null;

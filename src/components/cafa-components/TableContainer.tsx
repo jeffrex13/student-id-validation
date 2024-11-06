@@ -133,7 +133,6 @@ export default function TableContainer() {
   const handleSingleAdd = () => {
     setShowFileUpload(false);
     // Implement single add logic here
-    console.log('Single add selected');
   };
 
   const handleMultipleAdd = () => {

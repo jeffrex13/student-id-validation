@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import CustomDataTable from '../CustomTable';
 import axios from 'axios';
@@ -35,6 +35,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Student } from '@/types';
 import { Badge } from '../ui/badge';
 import { Label } from '../ui/label';
+import Image from 'next/image';
+import { debounce } from 'lodash';
 // import Image from 'next/image';
 
 interface TableContainerProps {
@@ -58,6 +60,9 @@ export default function TableContainer({ course }: TableContainerProps) {
   });
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   // const [imageFile, setImageFile] = useState<File | null>(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // You can process the files or send them to your server here
@@ -154,12 +159,10 @@ export default function TableContainer({ course }: TableContainerProps) {
 
   const handleSingleAdd = () => {
     setShowSingleAdd(true);
-    // Implement single add logic here
   };
 
   const handleMultipleAdd = () => {
     setShowFileUpload(true);
-    // Implement multiple add logic here
   };
 
   const handleView = (student: Student) => {
@@ -173,31 +176,33 @@ export default function TableContainer({ course }: TableContainerProps) {
   };
 
   const handleDelete = (student: Student) => {
-    console.log('Delete selected for student:', student);
+    setStudentToDelete(student);
+    setShowDeleteConfirmation(true);
   };
 
-  const handleEditSubmit = async () => {
-    try {
-      const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API}/student/${editFormData._id}`,
-        editFormData,
-      );
+  const confirmDelete = async () => {
+    if (!studentToDelete) return;
 
+    try {
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_API}/student/${studentToDelete._id}`,
+      );
       if (response.data) {
         toast({
           title: 'Success',
-          description: 'Student information updated successfully!',
+          description: 'Student deleted successfully!',
           variant: 'default',
           duration: 3000,
         });
-        setShowEdit(false);
-        refreshData(); // Refresh the table data
+        setShowDeleteConfirmation(false);
+        setStudentToDelete(null);
+        refreshData();
       }
     } catch (error) {
-      console.error('Error updating student:', error);
+      console.error('Error deleting student:', error);
       toast({
         title: 'Error',
-        description: 'Failed to update student information.',
+        description: 'Failed to delete student. Please try again.',
         variant: 'destructive',
         duration: 3000,
       });
@@ -249,6 +254,41 @@ export default function TableContainer({ course }: TableContainerProps) {
     }
   };
 
+  // Edit Submit
+  const handleEditSubmit = async () => {
+    try {
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API}/student/${editFormData._id}`,
+        {
+          profile_image: selectedImage,
+          name: editFormData.name,
+          tup_id: editFormData.tup_id,
+          school_year: editFormData.school_year,
+          isValid: editFormData.isValid,
+        },
+      );
+
+      if (response.data) {
+        toast({
+          title: 'Success',
+          description: 'Student information updated successfully!',
+          variant: 'default',
+          duration: 3000,
+        });
+        setShowEdit(false);
+        refreshData(); // Refresh the table data
+      }
+    } catch (error) {
+      console.error('Error updating student:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update student information.',
+        variant: 'destructive',
+        duration: 3000,
+      });
+    }
+  };
+
   const handleCloseDialog = () => {
     setSelectedImage(null);
     setShowSingleAdd(false); // or setShowEdit(false)
@@ -263,7 +303,7 @@ export default function TableContainer({ course }: TableContainerProps) {
     const fetchStudents = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API}/student/${course}`,
+          `${process.env.NEXT_PUBLIC_API}/student/${course}?search=${searchQuery}`,
         );
         setStudentList(response.data);
       } catch (error) {
@@ -279,7 +319,7 @@ export default function TableContainer({ course }: TableContainerProps) {
 
     fetchStudents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [course]);
+  }, [course, searchQuery]);
 
   useEffect(() => {
     if (studentDetails) {
@@ -293,7 +333,19 @@ export default function TableContainer({ course }: TableContainerProps) {
     }
   }, [studentDetails]);
 
-  console.log(selectedImage);
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((query: string) => {
+        setSearchQuery(query);
+      }, 500),
+    [],
+  );
+
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
 
   return (
     <Card className="container mx-auto p-6">
@@ -304,6 +356,7 @@ export default function TableContainer({ course }: TableContainerProps) {
             type="text"
             placeholder="Search Student..."
             className="pr-10"
+            onChange={(e) => debouncedSearch(e.target.value)}
           />
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         </div>
@@ -440,19 +493,19 @@ export default function TableContainer({ course }: TableContainerProps) {
           </DialogHeader>
           <div className="flex flex-col items-center justify-center gap-8">
             <div>
-              {/* {editUserData.profile_photo ? (
-              <Image
-                src={photoPreview ?? editUserData.profile_photo}
-                alt="Instructor Profile Picture"
-                width={200}
-                height={200}
-                className="rounded-lg"
-              />
-            ) : ( */}
-              <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-                <User className="h-16 w-16 text-gray-500" />
-              </div>
-              {/* )} */}
+              {studentDetails?.profile_image ? (
+                <Image
+                  src={studentDetails?.profile_image}
+                  alt="Instructor Profile Picture"
+                  width={200}
+                  height={200}
+                  className="rounded-lg"
+                />
+              ) : (
+                <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                  <User className="h-16 w-16 text-gray-500" />
+                </div>
+              )}
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2">
@@ -496,8 +549,30 @@ export default function TableContainer({ course }: TableContainerProps) {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="mx-auto flex flex-col items-center">
-              <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
-                <User className="h-16 w-16 text-gray-500" />
+              <div>
+                {selectedImage ? (
+                  <Image
+                    src={selectedImage}
+                    alt="Preview"
+                    width={200}
+                    height={200}
+                    className="rounded-lg"
+                    priority
+                  />
+                ) : studentDetails?.profile_image ? (
+                  <Image
+                    src={studentDetails.profile_image}
+                    alt="Student"
+                    width={200}
+                    height={200}
+                    className="rounded-lg"
+                    priority
+                  />
+                ) : (
+                  <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden relative">
+                    <User className="h-16 w-16 text-gray-500" />
+                  </div>
+                )}
               </div>
               <div className="mt-2">
                 <Input
@@ -518,7 +593,9 @@ export default function TableContainer({ course }: TableContainerProps) {
                 id="tup_id"
                 value={editFormData.tup_id}
                 className="col-span-3"
-                disabled
+                onChange={(e) =>
+                  setEditFormData({ ...editFormData, tup_id: e.target.value })
+                }
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -570,6 +647,32 @@ export default function TableContainer({ course }: TableContainerProps) {
               Cancel
             </Button>
             <Button onClick={handleEditSubmit}>Save changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={showDeleteConfirmation}
+        onOpenChange={setShowDeleteConfirmation}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm">
+            Are you sure you want to delete {studentToDelete?.name}? This action
+            cannot be undone.
+          </p>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteConfirmation(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
