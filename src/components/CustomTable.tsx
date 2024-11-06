@@ -64,10 +64,19 @@ export default function CustomDataTable({
   const sortedData = React.useMemo(() => {
     if (sortState.column) {
       return [...data].sort((a, b) => {
-        if (a[sortState.column!] < b[sortState.column!])
+        const column = sortState.column as keyof Student;
+        const aValue = a[column] ?? '';
+        const bValue = b[column] ?? '';
+
+        const aString = String(aValue);
+        const bString = String(bValue);
+
+        if (aString < bString) {
           return sortState.direction === 'asc' ? -1 : 1;
-        if (a[sortState.column!] > b[sortState.column!])
+        }
+        if (aString > bString) {
           return sortState.direction === 'asc' ? 1 : -1;
+        }
         return 0;
       });
     }

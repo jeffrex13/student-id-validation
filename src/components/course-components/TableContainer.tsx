@@ -35,6 +35,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Student } from '@/types';
 import { Badge } from '../ui/badge';
 import { Label } from '../ui/label';
+import Image from 'next/image';
 // import Image from 'next/image';
 
 interface TableContainerProps {
@@ -176,34 +177,6 @@ export default function TableContainer({ course }: TableContainerProps) {
     console.log('Delete selected for student:', student);
   };
 
-  const handleEditSubmit = async () => {
-    try {
-      const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API}/student/${editFormData._id}`,
-        editFormData,
-      );
-
-      if (response.data) {
-        toast({
-          title: 'Success',
-          description: 'Student information updated successfully!',
-          variant: 'default',
-          duration: 3000,
-        });
-        setShowEdit(false);
-        refreshData(); // Refresh the table data
-      }
-    } catch (error) {
-      console.error('Error updating student:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update student information.',
-        variant: 'destructive',
-        duration: 3000,
-      });
-    }
-  };
-
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
@@ -246,6 +219,41 @@ export default function TableContainer({ course }: TableContainerProps) {
       };
 
       reader.readAsDataURL(file);
+    }
+  };
+
+  // Edit Submit
+  const handleEditSubmit = async () => {
+    try {
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API}/student/${editFormData._id}`,
+        {
+          profile_image: selectedImage,
+          name: editFormData.name,
+          tup_id: editFormData.tup_id,
+          school_year: editFormData.school_year,
+          isValid: editFormData.isValid,
+        },
+      );
+
+      if (response.data) {
+        toast({
+          title: 'Success',
+          description: 'Student information updated successfully!',
+          variant: 'default',
+          duration: 3000,
+        });
+        setShowEdit(false);
+        refreshData(); // Refresh the table data
+      }
+    } catch (error) {
+      console.error('Error updating student:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update student information.',
+        variant: 'destructive',
+        duration: 3000,
+      });
     }
   };
 
@@ -440,19 +448,19 @@ export default function TableContainer({ course }: TableContainerProps) {
           </DialogHeader>
           <div className="flex flex-col items-center justify-center gap-8">
             <div>
-              {/* {editUserData.profile_photo ? (
-              <Image
-                src={photoPreview ?? editUserData.profile_photo}
-                alt="Instructor Profile Picture"
-                width={200}
-                height={200}
-                className="rounded-lg"
-              />
-            ) : ( */}
-              <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-                <User className="h-16 w-16 text-gray-500" />
-              </div>
-              {/* )} */}
+              {studentDetails?.profile_image ? (
+                <Image
+                  src={studentDetails?.profile_image}
+                  alt="Instructor Profile Picture"
+                  width={200}
+                  height={200}
+                  className="rounded-lg"
+                />
+              ) : (
+                <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                  <User className="h-16 w-16 text-gray-500" />
+                </div>
+              )}
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2">
@@ -496,8 +504,30 @@ export default function TableContainer({ course }: TableContainerProps) {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="mx-auto flex flex-col items-center">
-              <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
-                <User className="h-16 w-16 text-gray-500" />
+              <div>
+                {selectedImage ? (
+                  <Image
+                    src={selectedImage}
+                    alt="Preview"
+                    width={200}
+                    height={200}
+                    className="rounded-lg"
+                    priority
+                  />
+                ) : studentDetails?.profile_image ? (
+                  <Image
+                    src={studentDetails.profile_image}
+                    alt="Student"
+                    width={200}
+                    height={200}
+                    className="rounded-lg"
+                    priority
+                  />
+                ) : (
+                  <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden relative">
+                    <User className="h-16 w-16 text-gray-500" />
+                  </div>
+                )}
               </div>
               <div className="mt-2">
                 <Input
@@ -518,7 +548,9 @@ export default function TableContainer({ course }: TableContainerProps) {
                 id="tup_id"
                 value={editFormData.tup_id}
                 className="col-span-3"
-                disabled
+                onChange={(e) =>
+                  setEditFormData({ ...editFormData, tup_id: e.target.value })
+                }
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
