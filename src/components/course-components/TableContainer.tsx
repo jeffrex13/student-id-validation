@@ -159,12 +159,10 @@ export default function TableContainer({ course }: TableContainerProps) {
 
   const handleSingleAdd = () => {
     setShowSingleAdd(true);
-    // Implement single add logic here
   };
 
   const handleMultipleAdd = () => {
     setShowFileUpload(true);
-    // Implement multiple add logic here
   };
 
   const handleView = (student: Student) => {
@@ -334,8 +332,6 @@ export default function TableContainer({ course }: TableContainerProps) {
       });
     }
   }, [studentDetails]);
-
-  console.log(selectedImage);
 
   const debouncedSearch = useMemo(
     () =>

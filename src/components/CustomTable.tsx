@@ -21,10 +21,6 @@ import {
   MoreVertical,
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-// import Image1 from '../../public/images/test-image.png';
-// import Image2 from '../../public/images/test-image1.png';
-// import Image3 from '../../public/images/test-image2.png';
-// import Image4 from '../../public/images/test-image3.png';
 
 import Image from 'next/image';
 import { Badge } from './ui/badge';
@@ -49,16 +45,16 @@ export default function CustomDataTable({
   });
   const [currentPage, setCurrentPage] = useState(1);
 
-  const ImageArray: string[] = [];
-
   const handleSort = (column: keyof Student) => {
-    setSortState((prevState) => ({
-      column,
-      direction:
-        prevState.column === column && prevState.direction === 'asc'
-          ? 'desc'
-          : 'asc',
-    }));
+    if (column === 'name') {
+      setSortState((prevState) => ({
+        column,
+        direction:
+          prevState.column === column && prevState.direction === 'asc'
+            ? 'desc'
+            : 'asc',
+      }));
+    }
   };
 
   const sortedData = React.useMemo(() => {
@@ -89,14 +85,17 @@ export default function CustomDataTable({
   const currentData = sortedData.slice(startIndex, endIndex);
 
   const renderSortIcon = (column: keyof Student) => {
-    if (sortState.column !== column) {
-      return <ChevronsUpDown className="ml-2 h-4 w-4" />;
+    if (column === 'name') {
+      if (sortState.column !== column) {
+        return <ChevronsUpDown className="ml-2 h-4 w-4" />;
+      }
+      return sortState.direction === 'asc' ? (
+        <ChevronUp className="ml-2 h-4 w-4" />
+      ) : (
+        <ChevronDown className="ml-2 h-4 w-4" />
+      );
     }
-    return sortState.direction === 'asc' ? (
-      <ChevronUp className="ml-2 h-4 w-4" />
-    ) : (
-      <ChevronDown className="ml-2 h-4 w-4" />
-    );
+    return null;
   };
 
   return (
@@ -118,7 +117,9 @@ export default function CustomDataTable({
                   <Button
                     variant="ghost"
                     onClick={() => handleSort(column as keyof Student)}
-                    className="flex items-center pl-4"
+                    className={`flex items-center pl-4 ${
+                      column !== 'name' && 'cursor-default hover:bg-transparent'
+                    }`}
                   >
                     {column.charAt(0).toUpperCase() + column.slice(1)}
                     {renderSortIcon(column as keyof Student)}
@@ -132,15 +133,17 @@ export default function CustomDataTable({
               currentData.map((item, index) => (
                 <TableRow key={item._id}>
                   <TableCell>
-                    {index < ImageArray.length ? (
+                    {item.profile_image ? (
                       <Image
-                        src={ImageArray[index]}
+                        src={item.profile_image}
                         alt={`student-image-${index}`}
-                        className="w-12 h-12"
+                        width={75}
+                        height={75}
+                        className="w-14 h-14 rounded-full border border-gray-400 object-cover"
                       />
                     ) : (
-                      <div className="w-12 h-12 bg-gray-200 flex items-center justify-center rounded-full p-1">
-                        <User className="w-12 h-12" />
+                      <div className="w-14 h-14 bg-gray-200 flex items-center justify-center rounded-full border border-gray-400 p-1">
+                        <User className="w-14 h-14" />
                       </div>
                     )}
                   </TableCell>
