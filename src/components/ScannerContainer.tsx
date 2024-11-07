@@ -116,6 +116,11 @@ export default function ScannerContainer() {
     fetchStudents();
   }, []);
 
+  const handleCloseDialog = () => {
+    setMatchedStudent(null); // Reset matchedStudent
+    setOpenValidateDialog(false); // Close the dialog
+  };
+
   return (
     <div className="max-h-screen max-w-screen">
       {!pageLoad && !userDetails && (
@@ -174,7 +179,7 @@ export default function ScannerContainer() {
         <CustomDialog
           actionType={actionType}
           open={openValidateDialog}
-          setOpen={setOpenValidateDialog}
+          setOpen={handleCloseDialog}
           studentData={matchedStudent}
         />
       )}
