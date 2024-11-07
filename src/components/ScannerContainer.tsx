@@ -144,13 +144,17 @@ export default function ScannerContainer() {
         <CardContent className="flex flex-col items-center gap-4">
           {!isScanning && (
             <>
-              <Button
-                onClick={() => toggleScanning('validate')}
-                className="w-full font-semibold py-6 px-4 rounded-md shadow-sm transition duration-300 ease-in-out relative"
-              >
-                <IdCard className="w-5 h-5 absolute left-4" />
-                <span className="w-full text-center text-lg">VALIDATE ID</span>
-              </Button>
+              {userDetails && (
+                <Button
+                  onClick={() => toggleScanning('validate')}
+                  className="w-full font-semibold py-6 px-4 rounded-md shadow-sm transition duration-300 ease-in-out relative"
+                >
+                  <IdCard className="w-5 h-5 absolute left-4" />
+                  <span className="w-full text-center text-lg">
+                    VALIDATE ID
+                  </span>
+                </Button>
+              )}
               <Button
                 onClick={() => toggleScanning('scan')}
                 className="w-full font-semibold py-6 px-4 rounded-md shadow-sm transition duration-300 ease-in-out relative"

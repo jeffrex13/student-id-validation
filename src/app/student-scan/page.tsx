@@ -16,6 +16,7 @@ const StudentScanPage = async () => {
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
+          backgroundColor: '#f5f5f5',
           backgroundImage: "url('/images/logo.png')",
           backgroundSize: 'contain',
           backgroundPosition: 'center',

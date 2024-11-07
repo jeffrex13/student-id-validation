@@ -60,7 +60,10 @@ const LoginContainer = () => {
       <Link href="/student-scan">
         {' '}
         {/* Use Link component for navigation */}
-        <Button className="absolute top-4 left-4 flex items-center gap-2">
+        <Button
+          className="absolute top-4 left-4 flex items-center gap-2"
+          variant="outline"
+        >
           <ArrowLeft className="w-5 h-5" /> Scan ID
         </Button>
       </Link>
