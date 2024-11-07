@@ -3,7 +3,7 @@ import React from 'react';
 
 const HomePage = () => {
   return (
-    <div className="container mx-auto pt-40 max-w-md">
+    <div className="container mx-auto pt-40 max-w-xl">
       <ScannerContainer />
     </div>
   );

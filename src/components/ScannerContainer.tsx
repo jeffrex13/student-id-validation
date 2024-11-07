@@ -131,7 +131,7 @@ export default function ScannerContainer() {
           Login <LogIn className="w-5 h-5" />
         </Button>
       )}
-      <Card className="container mx-auto p-4 max-w-lg w-[32rem] shadow-xl">
+      <Card className="container mx-auto p-4 max-w-xl w-[36rem] shadow-2xl">
         <CardHeader className="mb-2">
           <CardTitle className="text-2xl font-semibold text-center">
             STUDENT ID VALIDATION

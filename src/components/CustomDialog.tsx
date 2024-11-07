@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { DialogProps } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import imageCompression from 'browser-image-compression';
 
 const CustomDialog = ({
   studentData,
@@ -130,55 +131,49 @@ const CustomDialog = ({
     // setShowEditConfirmation(false);
   };
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
 
     if (file) {
-      // Check file size (e.g., max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
+      try {
+        // Compression options
+        const options = {
+          maxSizeMB: 0.05, // 50KB = 0.05MB
+          maxWidthOrHeight: 800,
+          useWebWorker: true,
+        };
+
+        // Compress the image
+        const compressedFile = await imageCompression(file, options);
+
+        // Convert to base64
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result as string;
+          setSelectedImage(base64String);
+        };
+
+        reader.onerror = () => {
+          toast({
+            title: 'Error',
+            description: 'Error reading file',
+            variant: 'destructive',
+          });
+        };
+
+        reader.readAsDataURL(compressedFile);
+      } catch (error) {
+        console.error('Error compressing image:', error);
         toast({
           title: 'Error',
-          description: 'File size should be less than 5MB',
+          description: 'Error processing image',
           variant: 'destructive',
         });
-        return;
       }
-
-      // Check file type
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: 'Error',
-          description: 'Please select an image file',
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      // Proceed with file processing
-      // setImageFile(file);
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setSelectedImage(base64String);
-        setEditStudentData({
-          ...editStudentData,
-          profile_image: base64String,
-        });
-      };
-
-      reader.onerror = () => {
-        toast({
-          title: 'Error',
-          description: 'Error reading file',
-          variant: 'destructive',
-        });
-      };
-
-      reader.readAsDataURL(file);
     }
   };
-
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -219,7 +214,7 @@ const CustomDialog = ({
                   </div>
                 </div>
                 {isEdit && (
-                  <div className="mt-2">
+                  <div className="mt-2 space-y-2">
                     <Input
                       type="file"
                       id="imagefile"
@@ -228,6 +223,9 @@ const CustomDialog = ({
                       onChange={handleImageChange}
                       className="w-60"
                     />
+                    <p className="text-xs font-medium text-gray-600">
+                      Note: Max image size should not exceed 1 mb.
+                    </p>
                   </div>
                 )}
 
