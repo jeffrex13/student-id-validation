@@ -16,6 +16,9 @@ import { Input } from './ui/input';
 import axios from 'axios';
 import { cn } from '@/lib/utils';
 import { DialogProps } from '@/types';
+import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
+import imageCompression from 'browser-image-compression';
 
 const CustomDialog = ({
   studentData,
@@ -23,9 +26,11 @@ const CustomDialog = ({
   setOpen,
   actionType,
 }: DialogProps) => {
+  const { toast } = useToast();
+
   const [isEdit, setIsEdit] = useState(false);
   const [editStudentData, setEditStudentData] = useState({
-    _id: '',
+    profile_image: '',
     name: '',
     tup_id: '',
     school_year: '',
@@ -34,8 +39,10 @@ const CustomDialog = ({
   const [showValidateConfirmation, setShowValidateConfirmation] =
     useState(false);
   const [showEditConfirmation, setShowEditConfirmation] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [currentStudentData, setCurrentStudentData] = useState({
     _id: studentData._id,
+    profile_image: studentData.profile_image || '',
     name: studentData.name,
     tup_id: studentData.tup_id,
     school_year: studentData.school_year,
@@ -44,6 +51,7 @@ const CustomDialog = ({
 
   const hasChanges = () => {
     return (
+      editStudentData.profile_image !== studentData.profile_image ||
       editStudentData.name !== studentData.name ||
       editStudentData.school_year !== studentData.school_year
     );
@@ -74,48 +82,153 @@ const CustomDialog = ({
       }
     } else {
       setIsEdit(true);
-      setEditStudentData({
-        _id: studentData._id,
-        name: studentData.name,
-        school_year: studentData.school_year,
-        tup_id: studentData.tup_id,
-        isValid: studentData.isValid,
-      });
+      if (studentData) {
+        setEditStudentData({
+          profile_image: studentData.profile_image || '',
+          name: studentData.name,
+          school_year: studentData.school_year,
+          tup_id: studentData.tup_id,
+          isValid: studentData.isValid,
+        });
+      }
     }
   };
 
   const confirmEdit = async () => {
-    const result = await axios.patch(
-      `${process.env.NEXT_PUBLIC_API}/student/${studentData._id}`,
-      editStudentData,
-    );
-    console.log(result);
-    setCurrentStudentData({
-      _id: result.data.updatedStudent._id,
-      name: result.data.updatedStudent.name,
-      tup_id: result.data.updatedStudent.tup_id,
-      school_year: result.data.updatedStudent.school_year,
-      isValid: result.data.updatedStudent.isValid,
-    });
-    setIsEdit(false);
-    setShowEditConfirmation(false);
+    try {
+      const result = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API}/student/${studentData._id}`,
+        editStudentData,
+      );
+      console.log(result);
+
+      if (result) {
+        setCurrentStudentData({
+          _id: result.data.updatedStudent._id,
+          profile_image: result.data.updatedStudent.profile_image,
+          name: result.data.updatedStudent.name,
+          tup_id: result.data.updatedStudent.tup_id,
+          school_year: result.data.updatedStudent.school_year,
+          isValid: result.data.updatedStudent.isValid,
+        });
+        setIsEdit(false);
+        setShowEditConfirmation(false);
+        toast({
+          title: 'Success',
+          description: 'Changes saved successfully',
+          variant: 'default',
+        });
+      }
+    } catch (error) {
+      console.error('Error saving changes:', error);
+      toast({
+        title: 'Error',
+        description: 'Error saving changes',
+        variant: 'destructive',
+      });
+    }
+    // setIsEdit(false);
+    // setShowEditConfirmation(false);
   };
 
+  const handleImageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      try {
+        // Compression options
+        const options = {
+          maxSizeMB: 0.05, // 50KB = 0.05MB
+          maxWidthOrHeight: 800,
+          useWebWorker: true,
+        };
+
+        // Compress the image
+        const compressedFile = await imageCompression(file, options);
+
+        // Convert to base64
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result as string;
+          setSelectedImage(base64String);
+        };
+
+        reader.onerror = () => {
+          toast({
+            title: 'Error',
+            description: 'Error reading file',
+            variant: 'destructive',
+          });
+        };
+
+        reader.readAsDataURL(compressedFile);
+      } catch (error) {
+        console.error('Error compressing image:', error);
+        toast({
+          title: 'Error',
+          description: 'Error processing image',
+          variant: 'destructive',
+        });
+      }
+    }
+  };
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">
               Student Details
             </DialogTitle>
           </DialogHeader>
           <div className="grid gap-6 py-4">
-            <div className="flex items-center justify-between">
+            <div className="flex justify-between">
               <div className="flex flex-col justify-center gap-4">
-                <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
-                  <User className="w-10 h-10 text-gray-600" />
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-center">
+                    {selectedImage ? (
+                      <Image
+                        src={selectedImage}
+                        alt="Preview"
+                        width={200}
+                        height={200}
+                        className="rounded-lg"
+                        priority
+                      />
+                    ) : currentStudentData.profile_image ? (
+                      <Image
+                        src={currentStudentData.profile_image}
+                        alt="Student"
+                        width={200}
+                        height={200}
+                        className="rounded-lg"
+                        priority
+                      />
+                    ) : (
+                      <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden relative">
+                        <User className="h-16 w-16 text-gray-500" />
+                      </div>
+                    )}
+                  </div>
                 </div>
+                {isEdit && (
+                  <div className="mt-2 space-y-2">
+                    <Input
+                      type="file"
+                      id="imagefile"
+                      name="imagefile"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="w-60"
+                    />
+                    <p className="text-xs font-medium text-gray-600">
+                      Note: Max image size should not exceed 1 mb.
+                    </p>
+                  </div>
+                )}
+
                 <div>
                   <h2 className="font-semibold">{currentStudentData.name}</h2>
                   <Badge
@@ -129,11 +242,11 @@ const CustomDialog = ({
                   </Badge>
                 </div>
               </div>
-              <div className="flex justify-center items-center">
+              <div className="mt-2">
                 {currentStudentData.tup_id && (
                   <QRCodeSVG
                     value={currentStudentData.tup_id}
-                    size={80}
+                    size={90}
                     level="H"
                   />
                 )}

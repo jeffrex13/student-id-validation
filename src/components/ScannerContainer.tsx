@@ -116,6 +116,11 @@ export default function ScannerContainer() {
     fetchStudents();
   }, []);
 
+  const handleCloseDialog = () => {
+    setMatchedStudent(null); // Reset matchedStudent
+    setOpenValidateDialog(false); // Close the dialog
+  };
+
   return (
     <div className="max-h-screen max-w-screen">
       {!pageLoad && !userDetails && (
@@ -126,7 +131,7 @@ export default function ScannerContainer() {
           Login <LogIn className="w-5 h-5" />
         </Button>
       )}
-      <Card className="container mx-auto p-4 max-w-lg w-[32rem] shadow-xl">
+      <Card className="container mx-auto p-4 max-w-xl w-[36rem] shadow-2xl">
         <CardHeader className="mb-2">
           <CardTitle className="text-2xl font-semibold text-center">
             STUDENT ID VALIDATION
@@ -139,13 +144,17 @@ export default function ScannerContainer() {
         <CardContent className="flex flex-col items-center gap-4">
           {!isScanning && (
             <>
-              <Button
-                onClick={() => toggleScanning('validate')}
-                className="w-full font-semibold py-6 px-4 rounded-md shadow-sm transition duration-300 ease-in-out relative"
-              >
-                <IdCard className="w-5 h-5 absolute left-4" />
-                <span className="w-full text-center text-lg">VALIDATE ID</span>
-              </Button>
+              {userDetails && (
+                <Button
+                  onClick={() => toggleScanning('validate')}
+                  className="w-full font-semibold py-6 px-4 rounded-md shadow-sm transition duration-300 ease-in-out relative"
+                >
+                  <IdCard className="w-5 h-5 absolute left-4" />
+                  <span className="w-full text-center text-lg">
+                    VALIDATE ID
+                  </span>
+                </Button>
+              )}
               <Button
                 onClick={() => toggleScanning('scan')}
                 className="w-full font-semibold py-6 px-4 rounded-md shadow-sm transition duration-300 ease-in-out relative"
@@ -174,7 +183,7 @@ export default function ScannerContainer() {
         <CustomDialog
           actionType={actionType}
           open={openValidateDialog}
-          setOpen={setOpenValidateDialog}
+          setOpen={handleCloseDialog}
           studentData={matchedStudent}
         />
       )}

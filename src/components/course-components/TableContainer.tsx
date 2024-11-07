@@ -38,6 +38,7 @@ import { Label } from '../ui/label';
 import Image from 'next/image';
 import { debounce } from 'lodash';
 // import Image from 'next/image';
+import imageCompression from 'browser-image-compression';
 
 interface TableContainerProps {
   course: string;
@@ -209,48 +210,92 @@ export default function TableContainer({ course }: TableContainerProps) {
     }
   };
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0];
+
+  //   if (file) {
+  //     // Check file size (e.g., max 5MB)
+  //     if (file.size > 5 * 1024 * 1024) {
+  //       toast({
+  //         title: 'Error',
+  //         description: 'File size should be less than 5MB',
+  //         variant: 'destructive',
+  //       });
+  //       return;
+  //     }
+
+  //     // Check file type
+  //     if (!file.type.startsWith('image/')) {
+  //       toast({
+  //         title: 'Error',
+  //         description: 'Please select an image file',
+  //         variant: 'destructive',
+  //       });
+  //       return;
+  //     }
+
+  //     // Proceed with file processing
+  //     // setImageFile(file);
+  //     const reader = new FileReader();
+
+  //     reader.onloadend = () => {
+  //       const base64String = reader.result as string;
+  //       setSelectedImage(base64String);
+  //     };
+
+  //     reader.onerror = () => {
+  //       toast({
+  //         title: 'Error',
+  //         description: 'Error reading file',
+  //         variant: 'destructive',
+  //       });
+  //     };
+
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
+
+  const handleImageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
 
     if (file) {
-      // Check file size (e.g., max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
+      try {
+        // Compression options
+        const options = {
+          maxSizeMB: 0.05, // 50KB = 0.05MB
+          maxWidthOrHeight: 800,
+          useWebWorker: true,
+        };
+
+        // Compress the image
+        const compressedFile = await imageCompression(file, options);
+
+        // Convert to base64
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result as string;
+          setSelectedImage(base64String);
+        };
+
+        reader.onerror = () => {
+          toast({
+            title: 'Error',
+            description: 'Error reading file',
+            variant: 'destructive',
+          });
+        };
+
+        reader.readAsDataURL(compressedFile);
+      } catch (error) {
+        console.error('Error compressing image:', error);
         toast({
           title: 'Error',
-          description: 'File size should be less than 5MB',
+          description: 'Error processing image',
           variant: 'destructive',
         });
-        return;
       }
-
-      // Check file type
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: 'Error',
-          description: 'Please select an image file',
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      // Proceed with file processing
-      // setImageFile(file);
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setSelectedImage(base64String);
-      };
-
-      reader.onerror = () => {
-        toast({
-          title: 'Error',
-          description: 'Error reading file',
-          variant: 'destructive',
-        });
-      };
-
-      reader.readAsDataURL(file);
     }
   };
 
@@ -276,6 +321,14 @@ export default function TableContainer({ course }: TableContainerProps) {
           duration: 3000,
         });
         setShowEdit(false);
+        setSelectedImage(null);
+        setEditFormData({
+          _id: '',
+          name: '',
+          tup_id: '',
+          school_year: '',
+          isValid: false,
+        });
         refreshData(); // Refresh the table data
       }
     } catch (error) {
@@ -445,7 +498,7 @@ export default function TableContainer({ course }: TableContainerProps) {
               <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
                 <User className="h-16 w-16 text-gray-500" />
               </div>
-              <div className="mt-2">
+              <div className="mt-2 space-y-2 ">
                 <Input
                   type="file"
                   id="imagefile"
@@ -454,6 +507,9 @@ export default function TableContainer({ course }: TableContainerProps) {
                   onChange={handleImageChange}
                   className="w-64"
                 />
+                <p className="text-xs font-medium text-gray-600">
+                  Note: Max image size should not exceed 1 mb.
+                </p>
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-2 mx-4">
@@ -574,7 +630,7 @@ export default function TableContainer({ course }: TableContainerProps) {
                   </div>
                 )}
               </div>
-              <div className="mt-2">
+              <div className="mt-2 space-y-2 text-center">
                 <Input
                   type="file"
                   id="imagefile"
@@ -583,6 +639,9 @@ export default function TableContainer({ course }: TableContainerProps) {
                   onChange={handleImageChange}
                   className="w-64"
                 />
+                <p className="text-xs font-medium text-gray-600">
+                  Note: Max image size should not exceed 1 mb.
+                </p>
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
