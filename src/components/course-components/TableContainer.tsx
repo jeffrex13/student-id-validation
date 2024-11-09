@@ -127,7 +127,7 @@ export default function TableContainer({ course }: TableContainerProps) {
           refreshData();
           toast({
             title: 'Success',
-            description: 'File uploaded successfully!',
+            description: `File uploaded successfully! ${response.data.message}`,
             variant: 'default',
             duration: 3000,
           });
@@ -399,11 +399,11 @@ export default function TableContainer({ course }: TableContainerProps) {
         });
         setSelectedImage(null); // Clear the selected image
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding student:', error);
       toast({
         title: 'Error',
-        description: 'Failed to add student. Please try again.',
+        description: `${error.response.data.message}. Please try again`,
         variant: 'destructive',
         duration: 3000,
       });
@@ -663,16 +663,16 @@ export default function TableContainer({ course }: TableContainerProps) {
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2">
                 <p className="font-semibold">Name:</p>
-                <p>{studentDetails?.name}</p>
+                <p>{studentDetails?.name ?? 'N/A'}</p>
               </div>
 
               <div className="flex items-center gap-2">
                 <p className="font-semibold">School year:</p>
-                <p>{studentDetails?.school_year}</p>
+                <p>{studentDetails?.school_year ?? 'N/A'}</p>
               </div>
               <div className="flex items-center gap-2">
                 <p className="font-semibold">TUP ID:</p>
-                <p>{studentDetails?.tup_id}</p>
+                <p>{studentDetails?.tup_id ?? 'N/A'}</p>
               </div>
               <div className="flex items-center gap-2">
                 <p className="font-semibold">Status:</p>
@@ -747,7 +747,7 @@ export default function TableContainer({ course }: TableContainerProps) {
               </Label>
               <Input
                 id="tup_id"
-                value={editFormData.tup_id}
+                value={editFormData.tup_id ?? 'N/A'}
                 className="col-span-3"
                 onChange={(e) =>
                   setEditFormData({ ...editFormData, tup_id: e.target.value })
@@ -760,7 +760,7 @@ export default function TableContainer({ course }: TableContainerProps) {
               </Label>
               <Input
                 id="name"
-                value={editFormData.name}
+                value={editFormData.name ?? 'N/A'}
                 onChange={(e) =>
                   setEditFormData({ ...editFormData, name: e.target.value })
                 }
@@ -773,7 +773,7 @@ export default function TableContainer({ course }: TableContainerProps) {
               </Label>
               <Input
                 id="school_year"
-                value={editFormData.school_year}
+                value={editFormData.school_year ?? 'N/A'}
                 onChange={(e) =>
                   setEditFormData({
                     ...editFormData,
