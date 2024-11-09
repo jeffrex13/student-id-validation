@@ -41,8 +41,17 @@ import { debounce } from 'lodash';
 import imageCompression from 'browser-image-compression';
 
 interface TableContainerProps {
-  course: string;
+  course: 'cafa' | 'cie' | 'cit' | 'cla' | 'coe' | 'cos';
 }
+
+const courseNames: Record<string, string> = {
+  cafa: 'COLLEGE OF ARCHITECTURE AND FINE ARTS',
+  cie: 'COLLEGE OF INDUSTRIAL EDUCATION',
+  cit: 'COLLEGE OF INDUSTRIAL TECHNOLOGY',
+  cla: 'COLLEGE OF LIBERAL ARTS',
+  coe: 'COLLEGE OF ENGINEERING',
+  cos: 'COLLEGE OF SCIENCE',
+};
 
 export default function TableContainer({ course }: TableContainerProps) {
   const { toast } = useToast();
@@ -402,7 +411,9 @@ export default function TableContainer({ course }: TableContainerProps) {
 
   return (
     <Card className="container mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-4">Student List</h1>
+      <h1 className="text-2xl text-center font-semibold mb-12">
+        {courseNames[course]}
+      </h1>
       <div className="flex justify-between mb-4">
         <div className="relative max-w-md w-full">
           <Input
@@ -442,7 +453,7 @@ export default function TableContainer({ course }: TableContainerProps) {
       {/* Table component */}
       <CustomDataTable
         data={studentList}
-        itemsPerPage={5}
+        itemsPerPage={10}
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}

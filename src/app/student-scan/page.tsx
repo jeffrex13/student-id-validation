@@ -11,12 +11,12 @@ const StudentScanPage = async () => {
   }
 
   return (
-    <div className="relative h-screen border z-10">
+    <div className="relative h-screen z-10">
       {/* Blurred Background */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center w-screen"
         style={{
-          backgroundColor: '#f5f5f5',
+          backgroundColor: '#E5E7EB',
           backgroundImage: "url('/images/logo.png')",
           backgroundSize: 'contain',
           backgroundPosition: 'center',

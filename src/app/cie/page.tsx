@@ -3,10 +3,7 @@ import React from 'react';
 
 const page = () => {
   return (
-    <div className="pt-14">
-      <p className="text-2xl font-semibold text-center mb-8">
-        COLLEGE OF INDUSTRIAL EDUCATION
-      </p>
+    <div className="pt-16">
       <TableContainer course="cie" />
     </div>
   );
