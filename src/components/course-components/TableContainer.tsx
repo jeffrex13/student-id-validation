@@ -349,11 +349,11 @@ export default function TableContainer({ course }: TableContainerProps) {
         });
         refreshData(); // Refresh the table data
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating student:', error);
       toast({
         title: 'Error',
-        description: 'Failed to update student information.',
+        description: `${error.response.data.message}`,
         variant: 'destructive',
         duration: 3000,
       });
