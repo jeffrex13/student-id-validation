@@ -61,6 +61,13 @@ export default function TableContainer({ course }: TableContainerProps) {
   const [showView, setShowView] = useState(false);
   const [studentDetails, setStudentDetails] = useState<Student | null>(null);
   const [showEdit, setShowEdit] = useState(false);
+  const [addSingleStudentData, setAddSingleStudentData] = useState<Student>({
+    _id: '',
+    name: '',
+    tup_id: '',
+    school_year: '',
+    isValid: false,
+  });
   const [editFormData, setEditFormData] = useState<Student>({
     _id: '',
     name: '',
@@ -351,6 +358,56 @@ export default function TableContainer({ course }: TableContainerProps) {
     }
   };
 
+  const handleSingleSubmit = async () => {
+    try {
+      const studentData = {
+        profile_image: selectedImage, // Image URL or base64 string
+        tup_id: addSingleStudentData.tup_id, // TUP ID
+        name: addSingleStudentData.name, // Name
+        school_year: addSingleStudentData.school_year, // School year
+        isValid: false, // Set default validity or adjust as needed
+      };
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API}/student/${course}`, // Adjust the endpoint as needed
+        studentData,
+        {
+          headers: {
+            'Content-Type': 'application/json', // Set content type to JSON
+          },
+        },
+      );
+
+      if (response.data) {
+        toast({
+          title: 'Success',
+          description: 'Student added successfully!',
+          variant: 'default',
+          duration: 3000,
+        });
+        setShowSingleAdd(false); // Close the dialog
+        refreshData(); // Refresh the student list
+        // Reset form data if necessary
+        setAddSingleStudentData({
+          _id: '',
+          name: '',
+          tup_id: '',
+          school_year: '',
+          isValid: false,
+        });
+        setSelectedImage(null); // Clear the selected image
+      }
+    } catch (error) {
+      console.error('Error adding student:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to add student. Please try again.',
+        variant: 'destructive',
+        duration: 3000,
+      });
+    }
+  };
+
   const handleCloseDialog = () => {
     setSelectedImage(null);
     setShowSingleAdd(false); // or setShowEdit(false)
@@ -527,26 +584,53 @@ export default function TableContainer({ course }: TableContainerProps) {
               <Label htmlFor="tup_id" className="text-right">
                 TUP ID
               </Label>
-              <Input id="tup_id" className="col-span-3" />
+              <Input
+                id="tup_id"
+                className="col-span-3"
+                onChange={(e) =>
+                  setAddSingleStudentData({
+                    ...addSingleStudentData,
+                    tup_id: e.target.value,
+                  })
+                }
+              />
             </div>
             <div className="grid grid-cols-4 items-center gap-2 mx-4">
               <Label htmlFor="name" className="text-right">
                 Name
               </Label>
-              <Input id="name" className="col-span-3" />
+              <Input
+                id="name"
+                className="col-span-3"
+                onChange={(e) =>
+                  setAddSingleStudentData({
+                    ...addSingleStudentData,
+                    name: e.target.value,
+                  })
+                }
+              />
             </div>
             <div className="grid grid-cols-4 items-center gap-2 mx-4">
               <Label htmlFor="school_year" className="text-right">
                 School Year
               </Label>
-              <Input id="school_year" className="col-span-3" />
+              <Input
+                id="school_year"
+                className="col-span-3"
+                onChange={(e) =>
+                  setAddSingleStudentData({
+                    ...addSingleStudentData,
+                    school_year: e.target.value,
+                  })
+                }
+              />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={handleCloseDialog}>
               Cancel
             </Button>
-            <Button>Add Student</Button>
+            <Button onClick={handleSingleSubmit}>Add Student</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
