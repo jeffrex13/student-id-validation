@@ -168,6 +168,7 @@ export default function TableContainer({ course }: TableContainerProps) {
         setStudentList(response.data);
       } catch (error) {
         console.error(error);
+        setStudentList([]);
       }
     };
 
@@ -213,8 +214,8 @@ export default function TableContainer({ course }: TableContainerProps) {
         });
         setShowDeleteConfirmation(false);
         setStudentToDelete(null);
-        refreshData();
       }
+      refreshData();
     } catch (error) {
       console.error('Error deleting student:', error);
       toast({
@@ -223,6 +224,7 @@ export default function TableContainer({ course }: TableContainerProps) {
         variant: 'destructive',
         duration: 3000,
       });
+      refreshData();
     }
   };
 
@@ -665,7 +667,7 @@ export default function TableContainer({ course }: TableContainerProps) {
               </div>
 
               <div className="flex items-center gap-2">
-                <p className="font-semibold">Email:</p>
+                <p className="font-semibold">School year:</p>
                 <p>{studentDetails?.school_year}</p>
               </div>
               <div className="flex items-center gap-2">
