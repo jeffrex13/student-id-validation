@@ -61,6 +61,13 @@ export default function TableContainer({ course }: TableContainerProps) {
   const [showView, setShowView] = useState(false);
   const [studentDetails, setStudentDetails] = useState<Student | null>(null);
   const [showEdit, setShowEdit] = useState(false);
+  const [addSingleStudentData, setAddSingleStudentData] = useState<Student>({
+    _id: '',
+    name: '',
+    tup_id: '',
+    school_year: '',
+    isValid: false,
+  });
   const [editFormData, setEditFormData] = useState<Student>({
     _id: '',
     name: '',
@@ -120,7 +127,7 @@ export default function TableContainer({ course }: TableContainerProps) {
           refreshData();
           toast({
             title: 'Success',
-            description: 'File uploaded successfully!',
+            description: `File uploaded successfully! ${response.data.message}`,
             variant: 'default',
             duration: 3000,
           });
@@ -161,6 +168,7 @@ export default function TableContainer({ course }: TableContainerProps) {
         setStudentList(response.data);
       } catch (error) {
         console.error(error);
+        setStudentList([]);
       }
     };
 
@@ -206,8 +214,8 @@ export default function TableContainer({ course }: TableContainerProps) {
         });
         setShowDeleteConfirmation(false);
         setStudentToDelete(null);
-        refreshData();
       }
+      refreshData();
     } catch (error) {
       console.error('Error deleting student:', error);
       toast({
@@ -216,6 +224,7 @@ export default function TableContainer({ course }: TableContainerProps) {
         variant: 'destructive',
         duration: 3000,
       });
+      refreshData();
     }
   };
 
@@ -345,6 +354,56 @@ export default function TableContainer({ course }: TableContainerProps) {
       toast({
         title: 'Error',
         description: 'Failed to update student information.',
+        variant: 'destructive',
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleSingleSubmit = async () => {
+    try {
+      const studentData = {
+        profile_image: selectedImage, // Image URL or base64 string
+        tup_id: addSingleStudentData.tup_id, // TUP ID
+        name: addSingleStudentData.name, // Name
+        school_year: addSingleStudentData.school_year, // School year
+        isValid: false, // Set default validity or adjust as needed
+      };
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API}/student/${course}`, // Adjust the endpoint as needed
+        studentData,
+        {
+          headers: {
+            'Content-Type': 'application/json', // Set content type to JSON
+          },
+        },
+      );
+
+      if (response.data) {
+        toast({
+          title: 'Success',
+          description: 'Student added successfully!',
+          variant: 'default',
+          duration: 3000,
+        });
+        setShowSingleAdd(false); // Close the dialog
+        refreshData(); // Refresh the student list
+        // Reset form data if necessary
+        setAddSingleStudentData({
+          _id: '',
+          name: '',
+          tup_id: '',
+          school_year: '',
+          isValid: false,
+        });
+        setSelectedImage(null); // Clear the selected image
+      }
+    } catch (error: any) {
+      console.error('Error adding student:', error);
+      toast({
+        title: 'Error',
+        description: `${error.response.data.message}. Please try again`,
         variant: 'destructive',
         duration: 3000,
       });
@@ -527,26 +586,53 @@ export default function TableContainer({ course }: TableContainerProps) {
               <Label htmlFor="tup_id" className="text-right">
                 TUP ID
               </Label>
-              <Input id="tup_id" className="col-span-3" />
+              <Input
+                id="tup_id"
+                className="col-span-3"
+                onChange={(e) =>
+                  setAddSingleStudentData({
+                    ...addSingleStudentData,
+                    tup_id: e.target.value,
+                  })
+                }
+              />
             </div>
             <div className="grid grid-cols-4 items-center gap-2 mx-4">
               <Label htmlFor="name" className="text-right">
                 Name
               </Label>
-              <Input id="name" className="col-span-3" />
+              <Input
+                id="name"
+                className="col-span-3"
+                onChange={(e) =>
+                  setAddSingleStudentData({
+                    ...addSingleStudentData,
+                    name: e.target.value,
+                  })
+                }
+              />
             </div>
             <div className="grid grid-cols-4 items-center gap-2 mx-4">
               <Label htmlFor="school_year" className="text-right">
                 School Year
               </Label>
-              <Input id="school_year" className="col-span-3" />
+              <Input
+                id="school_year"
+                className="col-span-3"
+                onChange={(e) =>
+                  setAddSingleStudentData({
+                    ...addSingleStudentData,
+                    school_year: e.target.value,
+                  })
+                }
+              />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={handleCloseDialog}>
               Cancel
             </Button>
-            <Button>Add Student</Button>
+            <Button onClick={handleSingleSubmit}>Add Student</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -577,16 +663,16 @@ export default function TableContainer({ course }: TableContainerProps) {
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2">
                 <p className="font-semibold">Name:</p>
-                <p>{studentDetails?.name}</p>
+                <p>{studentDetails?.name ?? 'N/A'}</p>
               </div>
 
               <div className="flex items-center gap-2">
-                <p className="font-semibold">Email:</p>
-                <p>{studentDetails?.school_year}</p>
+                <p className="font-semibold">School year:</p>
+                <p>{studentDetails?.school_year ?? 'N/A'}</p>
               </div>
               <div className="flex items-center gap-2">
                 <p className="font-semibold">TUP ID:</p>
-                <p>{studentDetails?.tup_id}</p>
+                <p>{studentDetails?.tup_id ?? 'N/A'}</p>
               </div>
               <div className="flex items-center gap-2">
                 <p className="font-semibold">Status:</p>
@@ -661,7 +747,7 @@ export default function TableContainer({ course }: TableContainerProps) {
               </Label>
               <Input
                 id="tup_id"
-                value={editFormData.tup_id}
+                value={editFormData.tup_id ?? 'N/A'}
                 className="col-span-3"
                 onChange={(e) =>
                   setEditFormData({ ...editFormData, tup_id: e.target.value })
@@ -674,7 +760,7 @@ export default function TableContainer({ course }: TableContainerProps) {
               </Label>
               <Input
                 id="name"
-                value={editFormData.name}
+                value={editFormData.name ?? 'N/A'}
                 onChange={(e) =>
                   setEditFormData({ ...editFormData, name: e.target.value })
                 }
@@ -687,7 +773,7 @@ export default function TableContainer({ course }: TableContainerProps) {
               </Label>
               <Input
                 id="school_year"
-                value={editFormData.school_year}
+                value={editFormData.school_year ?? 'N/A'}
                 onChange={(e) =>
                   setEditFormData({
                     ...editFormData,
