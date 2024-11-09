@@ -35,7 +35,7 @@ export default function Component({ children }: { children: ReactNode }) {
             (authCustomBackground ? (
               <div className="fixed inset-0 z-0">
                 {/* Top section - Maroon */}
-                <div className="w-full h-[85%] bg-rose-600" />
+                <div className="w-full h-[85%] bg-[#8F001C]" />
                 {/* Bottom section - Gray */}
                 <div className="w-full h-[15%] bg-gray-200" />
                 {/* Curved separator */}
@@ -55,7 +55,7 @@ export default function Component({ children }: { children: ReactNode }) {
             ) : (
               <div className="fixed inset-0 z-0">
                 {/* Base background - Red */}
-                <div className="w-full h-full bg-rose-600" />
+                <div className="w-full h-full bg-[#8F001C]" />
 
                 {/* Gray area with sweeping curve */}
                 <div className="absolute top-0 left-0 right-0 w-full h-[8%] bg-gray-200">
