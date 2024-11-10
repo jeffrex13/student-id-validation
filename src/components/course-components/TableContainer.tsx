@@ -132,13 +132,13 @@ export default function TableContainer({ course }: TableContainerProps) {
             duration: 3000,
           });
           console.log('File uploaded successfully:', response.data);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error uploading file:', error);
           toast({
             title: 'Error',
-            description: 'Error uploading file. Please try again.',
+            description: `${error.response.data.message}.Please try again.`,
             variant: 'destructive',
-            duration: 3000,
+            duration: 5000,
           });
         }
       } else {
@@ -222,7 +222,7 @@ export default function TableContainer({ course }: TableContainerProps) {
         title: 'Error',
         description: 'Failed to delete student. Please try again.',
         variant: 'destructive',
-        duration: 3000,
+        duration: 5000,
       });
       refreshData();
     }
@@ -355,7 +355,7 @@ export default function TableContainer({ course }: TableContainerProps) {
         title: 'Error',
         description: `${error.response.data.message}`,
         variant: 'destructive',
-        duration: 3000,
+        duration: 5000,
       });
     }
   };
@@ -405,7 +405,7 @@ export default function TableContainer({ course }: TableContainerProps) {
         title: 'Error',
         description: `${error.response.data.message}. Please try again`,
         variant: 'destructive',
-        duration: 3000,
+        duration: 5000,
       });
     }
   };
