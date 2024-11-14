@@ -323,7 +323,7 @@ export default function TableContainer({ course }: TableContainerProps) {
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_API}/student/${editFormData._id}`,
         {
-          profile_image: selectedImage,
+          profile_image: selectedImage ?? editFormData.profile_image,
           name: editFormData.name,
           tup_id: editFormData.tup_id,
           school_year: editFormData.school_year,
@@ -450,6 +450,7 @@ export default function TableContainer({ course }: TableContainerProps) {
         tup_id: studentDetails.tup_id,
         school_year: studentDetails.school_year,
         isValid: studentDetails.isValid,
+        profile_image: studentDetails.profile_image,
       });
     }
   }, [studentDetails]);
@@ -502,7 +503,11 @@ export default function TableContainer({ course }: TableContainerProps) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            disabled
+            className="flex items-center gap-2"
+          >
             Export
             <FolderOutput className="w-4 h-4" />
           </Button>
