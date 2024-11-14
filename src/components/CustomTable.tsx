@@ -109,7 +109,7 @@ export default function CustomDataTable({
                 'ID',
                 'name',
                 'semester',
-                'school year',
+                'year',
                 'status',
                 'qr Code',
                 'actions',
@@ -154,12 +154,12 @@ export default function CustomDataTable({
                   <TableCell>{item.school_year || 'N/A'}</TableCell>
                   <TableCell>
                     {item.isValid ? (
-                      <Badge className="bg-green-500 hover:bg-green-600 text-white rounded-full">
-                        Validated
+                      <Badge className="bg-green-500 hover:bg-green-600 text-white rounded-full text-center">
+                        Valid
                       </Badge>
                     ) : (
-                      <Badge className="bg-red-500 hover:bg-red-600 text-white rounded-full">
-                        Not Validated
+                      <Badge className="bg-red-500 hover:bg-red-600 text-white rounded-full text-center">
+                        Not Valid
                       </Badge>
                     )}
                   </TableCell>
