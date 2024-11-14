@@ -238,7 +238,7 @@ const CustomDialog = ({
                         'bg-red-500 hover:bg-red-600',
                     )}
                   >
-                    {currentStudentData.isValid ? 'Validated' : 'Not Validated'}
+                    {currentStudentData.isValid ? 'Valid' : 'Not Valid'}
                   </Badge>
                 </div>
               </div>

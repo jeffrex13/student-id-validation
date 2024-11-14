@@ -114,7 +114,7 @@ export default function ScannerContainer() {
     };
 
     fetchStudents();
-  }, []);
+  }, [isScanning, matchedStudent]);
 
   const handleCloseDialog = () => {
     setMatchedStudent(null); // Reset matchedStudent

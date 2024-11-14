@@ -39,6 +39,7 @@ import Image from 'next/image';
 import { debounce } from 'lodash';
 // import Image from 'next/image';
 import imageCompression from 'browser-image-compression';
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 
 interface TableContainerProps {
   course: 'cafa' | 'cie' | 'cit' | 'cla' | 'coe' | 'cos';
@@ -63,17 +64,21 @@ export default function TableContainer({ course }: TableContainerProps) {
   const [showEdit, setShowEdit] = useState(false);
   const [addSingleStudentData, setAddSingleStudentData] = useState<Student>({
     _id: '',
+    profile_image: '',
     name: '',
     tup_id: '',
     school_year: '',
     isValid: false,
+    semester: '',
   });
   const [editFormData, setEditFormData] = useState<Student>({
     _id: '',
+    profile_image: '',
     name: '',
     tup_id: '',
     school_year: '',
     isValid: false,
+    semester: '',
   });
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   // const [imageFile, setImageFile] = useState<File | null>(null);
@@ -323,7 +328,7 @@ export default function TableContainer({ course }: TableContainerProps) {
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_API}/student/${editFormData._id}`,
         {
-          profile_image: selectedImage,
+          profile_image: selectedImage ?? editFormData.profile_image,
           name: editFormData.name,
           tup_id: editFormData.tup_id,
           school_year: editFormData.school_year,
@@ -368,6 +373,7 @@ export default function TableContainer({ course }: TableContainerProps) {
         name: addSingleStudentData.name, // Name
         school_year: addSingleStudentData.school_year, // School year
         isValid: false, // Set default validity or adjust as needed
+        semester: addSingleStudentData.semester,
       };
 
       const response = await axios.post(
@@ -450,6 +456,7 @@ export default function TableContainer({ course }: TableContainerProps) {
         tup_id: studentDetails.tup_id,
         school_year: studentDetails.school_year,
         isValid: studentDetails.isValid,
+        profile_image: studentDetails.profile_image,
       });
     }
   }, [studentDetails]);
@@ -494,15 +501,19 @@ export default function TableContainer({ course }: TableContainerProps) {
             <DropdownMenuContent>
               <DropdownMenuItem onClick={handleSingleAdd}>
                 <UserPlus className="mr-2 h-4 w-4" />
-                Single Add
+                Add Student
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleMultipleAdd}>
                 <Users className="mr-2 h-4 w-4" />
-                Multiple Add
+                Add Student List
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            disabled
+            className="flex items-center gap-2"
+          >
             Export
             <FolderOutput className="w-4 h-4" />
           </Button>
@@ -568,6 +579,7 @@ export default function TableContainer({ course }: TableContainerProps) {
               <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
                 <User className="h-16 w-16 text-gray-500" />
               </div>
+
               <div className="mt-2 space-y-2 ">
                 <Input
                   type="file"
@@ -582,6 +594,7 @@ export default function TableContainer({ course }: TableContainerProps) {
                 </p>
               </div>
             </div>
+
             <div className="grid grid-cols-4 items-center gap-2 mx-4">
               <Label htmlFor="tup_id" className="text-right">
                 TUP ID
@@ -597,6 +610,7 @@ export default function TableContainer({ course }: TableContainerProps) {
                 }
               />
             </div>
+
             <div className="grid grid-cols-4 items-center gap-2 mx-4">
               <Label htmlFor="name" className="text-right">
                 Name
@@ -612,6 +626,7 @@ export default function TableContainer({ course }: TableContainerProps) {
                 }
               />
             </div>
+
             <div className="grid grid-cols-4 items-center gap-2 mx-4">
               <Label htmlFor="school_year" className="text-right">
                 School Year
@@ -626,6 +641,31 @@ export default function TableContainer({ course }: TableContainerProps) {
                   })
                 }
               />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-2 mx-4">
+              <Label className="text-right">Semester</Label>
+              <div className="col-span-3">
+                <RadioGroup
+                  value={addSingleStudentData.semester}
+                  onValueChange={(value) =>
+                    setAddSingleStudentData({
+                      ...addSingleStudentData,
+                      semester: value,
+                    })
+                  }
+                  className="flex items-center gap-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="1st Semester" id="1st-semester" />
+                    <Label htmlFor="1st-semester">1st Semester</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="2nd Semester" id="2nd-semester" />
+                    <Label htmlFor="2nd-semester">2nd Semester</Label>
+                  </div>
+                </RadioGroup>
+              </div>
             </div>
           </div>
           <DialogFooter>
@@ -666,14 +706,23 @@ export default function TableContainer({ course }: TableContainerProps) {
                 <p>{studentDetails?.name ?? 'N/A'}</p>
               </div>
 
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold">Semester:</p>
+                  <p>{studentDetails?.semester ?? 'N/A'}</p>
+                </div>
+              </div>
+
               <div className="flex items-center gap-2">
                 <p className="font-semibold">School year:</p>
                 <p>{studentDetails?.school_year ?? 'N/A'}</p>
               </div>
+
               <div className="flex items-center gap-2">
                 <p className="font-semibold">TUP ID:</p>
                 <p>{studentDetails?.tup_id ?? 'N/A'}</p>
               </div>
+
               <div className="flex items-center gap-2">
                 <p className="font-semibold">Status:</p>
                 {studentDetails?.isValid ? (
@@ -793,7 +842,7 @@ export default function TableContainer({ course }: TableContainerProps) {
                       : 'bg-red-500 hover:bg-red-600'
                   }
                 >
-                  {editFormData.isValid ? 'Validated' : 'Not Validated'}
+                  {editFormData.isValid ? 'Validated' : 'Not Valid'}
                 </Badge>
               </div>
             </div>
