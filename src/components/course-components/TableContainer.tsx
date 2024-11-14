@@ -63,17 +63,21 @@ export default function TableContainer({ course }: TableContainerProps) {
   const [showEdit, setShowEdit] = useState(false);
   const [addSingleStudentData, setAddSingleStudentData] = useState<Student>({
     _id: '',
+    profile_image: '',
     name: '',
     tup_id: '',
     school_year: '',
     isValid: false,
+    semester: '',
   });
   const [editFormData, setEditFormData] = useState<Student>({
     _id: '',
+    profile_image: '',
     name: '',
     tup_id: '',
     school_year: '',
     isValid: false,
+    semester: '',
   });
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   // const [imageFile, setImageFile] = useState<File | null>(null);
@@ -671,14 +675,23 @@ export default function TableContainer({ course }: TableContainerProps) {
                 <p>{studentDetails?.name ?? 'N/A'}</p>
               </div>
 
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold">Semester:</p>
+                  <p>{studentDetails?.semester ?? 'N/A'}</p>
+                </div>
+              </div>
+
               <div className="flex items-center gap-2">
                 <p className="font-semibold">School year:</p>
                 <p>{studentDetails?.school_year ?? 'N/A'}</p>
               </div>
+
               <div className="flex items-center gap-2">
                 <p className="font-semibold">TUP ID:</p>
                 <p>{studentDetails?.tup_id ?? 'N/A'}</p>
               </div>
+
               <div className="flex items-center gap-2">
                 <p className="font-semibold">Status:</p>
                 {studentDetails?.isValid ? (
