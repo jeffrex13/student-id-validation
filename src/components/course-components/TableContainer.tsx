@@ -333,6 +333,7 @@ export default function TableContainer({ course }: TableContainerProps) {
           tup_id: editFormData.tup_id,
           school_year: editFormData.school_year,
           isValid: editFormData.isValid,
+          semester: editFormData.semester,
         },
       );
 
@@ -351,6 +352,7 @@ export default function TableContainer({ course }: TableContainerProps) {
           tup_id: '',
           school_year: '',
           isValid: false,
+          semester: '',
         });
         refreshData(); // Refresh the table data
       }
@@ -457,6 +459,7 @@ export default function TableContainer({ course }: TableContainerProps) {
         school_year: studentDetails.school_year,
         isValid: studentDetails.isValid,
         profile_image: studentDetails.profile_image,
+        semester: studentDetails.semester,
       });
     }
   }, [studentDetails]);
@@ -831,6 +834,30 @@ export default function TableContainer({ course }: TableContainerProps) {
                 }
                 className="col-span-3"
               />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-2 mx-4">
+              <Label className="text-right">Semester</Label>
+              <div className="col-span-3">
+                <RadioGroup
+                  value={editFormData.semester}
+                  onValueChange={(value) =>
+                    setEditFormData({
+                      ...editFormData,
+                      semester: value,
+                    })
+                  }
+                  className="flex items-center gap-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="1st Semester" id="1st-semester" />
+                    <Label htmlFor="1st-semester">1st Semester</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="2nd Semester" id="2nd-semester" />
+                    <Label htmlFor="2nd-semester">2nd Semester</Label>
+                  </div>
+                </RadioGroup>
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">Status</Label>
