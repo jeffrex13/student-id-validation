@@ -13,6 +13,7 @@ import {
   FolderOutput,
   Plus,
   Search,
+  Trash2,
   User,
   UserPlus,
   Users,
@@ -85,6 +86,9 @@ export default function TableContainer({ course }: TableContainerProps) {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [showDeleteAllConfirmation, setShowDeleteAllConfirmation] =
+    useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // You can process the files or send them to your server here
@@ -203,6 +207,36 @@ export default function TableContainer({ course }: TableContainerProps) {
     setShowDeleteConfirmation(true);
   };
 
+  const handleDeleteAll = () => {
+    setShowDeleteAllConfirmation(true);
+  };
+
+  const handleConfirmDeleteAll = async () => {
+    try {
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_API}/student/delete-all/${course}`,
+      );
+      toast({
+        title: 'Success',
+        description: response.data.message,
+        variant: 'default',
+        duration: 3000,
+      });
+      setShowDeleteAllConfirmation(false);
+      refreshData();
+    } catch (error: any) {
+      console.error('Error deleting students:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete selected students. Please try again.',
+        variant: 'destructive',
+        duration: 5000,
+      });
+      setShowDeleteAllConfirmation(false);
+      refreshData();
+    }
+  };
+
   const confirmDelete = async () => {
     if (!studentToDelete) return;
 
@@ -230,6 +264,54 @@ export default function TableContainer({ course }: TableContainerProps) {
         duration: 5000,
       });
       refreshData();
+    }
+  };
+
+  const handleCheckboxChange = (id: string) => {
+    setSelectedIds((prevSelected) => {
+      if (prevSelected.includes(id)) {
+        return prevSelected.filter((selectedId) => selectedId !== id);
+      } else {
+        return [...prevSelected, id];
+      }
+    });
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedIds.length === 0) {
+      toast({
+        title: 'Error',
+        description: 'No students selected for deletion.',
+        variant: 'destructive',
+        duration: 3000,
+      });
+      return;
+    }
+
+    try {
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_API}/student/ids/bulk`,
+        {
+          data: { studentIds: selectedIds }, // Wrap selectedIds in an object
+        },
+      );
+
+      toast({
+        title: 'Success',
+        description: response.data.message,
+        variant: 'default',
+        duration: 3000,
+      });
+      setSelectedIds([]); // Clear selected IDs after deletion
+      refreshData(); // Refresh the student list
+    } catch (error) {
+      console.error('Error deleting students:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete selected students. Please try again.',
+        variant: 'destructive',
+        duration: 5000,
+      });
     }
   };
 
@@ -483,7 +565,7 @@ export default function TableContainer({ course }: TableContainerProps) {
       <h1 className="text-2xl text-center font-semibold mb-12">
         {courseNames[course]}
       </h1>
-      <div className="flex justify-between mb-4">
+      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-4">
         <div className="relative max-w-md w-full">
           <Input
             type="text"
@@ -494,9 +576,27 @@ export default function TableContainer({ course }: TableContainerProps) {
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={handleDeleteSelected}
+            className="border-destructive text-destructive flex-grow md:flex-grow-0 hover:bg-destructive hover:text-white"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete Selected
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={handleDeleteAll}
+            className="border-destructive text-destructive flex-grow md:flex-grow-0 hover:bg-destructive hover:text-white" // Simplified className
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete All
+          </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="flex items-center">
+              <Button className="flex-grow md:flex-grow-0">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Student
               </Button>
@@ -512,10 +612,11 @@ export default function TableContainer({ course }: TableContainerProps) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
           <Button
             variant="outline"
             disabled
-            className="flex items-center gap-2"
+            className="flex-grow md:flex-grow-0"
           >
             Export
             <FolderOutput className="w-4 h-4" />
@@ -526,10 +627,12 @@ export default function TableContainer({ course }: TableContainerProps) {
       {/* Table component */}
       <CustomDataTable
         data={studentList}
-        itemsPerPage={10}
+        itemsPerPage={5}
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        selectedIds={selectedIds} // Pass selected IDs
+        handleCheckboxChange={handleCheckboxChange} // Pass checkbox change handler
       />
 
       <Dialog open={showFileUpload} onOpenChange={setShowFileUpload}>
@@ -883,6 +986,7 @@ export default function TableContainer({ course }: TableContainerProps) {
         </DialogContent>
       </Dialog>
 
+      {/* delete confirmation dialog */}
       <Dialog
         open={showDeleteConfirmation}
         onOpenChange={setShowDeleteConfirmation}
@@ -904,6 +1008,33 @@ export default function TableContainer({ course }: TableContainerProps) {
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
               Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* delete all confirmation dialog */}
+      <Dialog
+        open={showDeleteAllConfirmation}
+        onOpenChange={setShowDeleteAllConfirmation}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm">
+            Are you sure you want to delete all students? This action cannot be
+            undone.
+          </p>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteAllConfirmation(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleConfirmDeleteAll}>
+              Delete All
             </Button>
           </DialogFooter>
         </DialogContent>

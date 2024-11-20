@@ -38,13 +38,14 @@ export default function CustomDataTable({
   onView,
   onEdit,
   onDelete,
+  selectedIds = [],
+  handleCheckboxChange,
 }: CustomTableProps) {
   const [sortState, setSortState] = useState<SortState>({
     column: null,
     direction: null,
   });
   const [currentPage, setCurrentPage] = useState(1);
-
   const handleSort = (column: keyof Student) => {
     if (column === 'name') {
       setSortState((prevState) => ({
@@ -98,13 +99,37 @@ export default function CustomDataTable({
     return null;
   };
 
+  // const handleSelectAllChange = (
+  //   event: React.ChangeEvent<HTMLInputElement>,
+  // ) => {
+  //   if (event.target.checked) {
+  //     // If checked, select all IDs
+  //     const allIds = currentData.map((item) => item._id);
+  //     setSelectedIds(allIds);
+  //   } else {
+  //     // If unchecked, clear all selections
+  //     setSelectedIds([]);
+  //   }
+  // };
+
   return (
     <div className="space-y-4">
       <div className="px-3">
         <Table className="">
           <TableHeader className="">
             <TableRow className="">
+              {/* <TableHead>
+                <input
+                  type="checkbox"
+                  checked={
+                    selectedIds.length === currentData.length &&
+                    currentData.length > 0
+                  }
+                  onChange={handleSelectAllChange}
+                />
+              </TableHead> */}
               {[
+                '',
                 'image',
                 'ID',
                 'name',
@@ -133,6 +158,13 @@ export default function CustomDataTable({
             {currentData.length > 0 ? (
               currentData.map((item, index) => (
                 <TableRow key={item._id}>
+                  <TableCell>
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(item._id)}
+                      onChange={() => handleCheckboxChange?.(item._id)}
+                    />
+                  </TableCell>
                   <TableCell>
                     {item.profile_image ? (
                       <Image
@@ -203,7 +235,7 @@ export default function CustomDataTable({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-4">
+                <TableCell colSpan={9} className="text-center py-4">
                   No data found
                 </TableCell>
               </TableRow>
