@@ -21,6 +21,8 @@ export interface CustomTableProps {
   onView?: (student: Student) => void;
   onEdit?: (student: Student) => void;
   onDelete?: (student: Student) => void;
+  selectedIds?: string[];
+  handleCheckboxChange?: (id: string) => void;
 }
 
 export interface DialogProps {
