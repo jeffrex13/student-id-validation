@@ -627,7 +627,7 @@ export default function TableContainer({ course }: TableContainerProps) {
       {/* Table component */}
       <CustomDataTable
         data={studentList}
-        itemsPerPage={5}
+        itemsPerPage={10}
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
