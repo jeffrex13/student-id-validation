@@ -57,7 +57,8 @@ const courseNames: Record<string, string> = {
 
 export default function TableContainer({ course }: TableContainerProps) {
   const { toast } = useToast();
-  const [studentList, setStudentList] = useState<any>([]);
+
+  const [studentList, setStudentList] = useState<Student[]>([]);
   const [showFileUpload, setShowFileUpload] = useState(false);
   const [showSingleAdd, setShowSingleAdd] = useState(false);
   const [showView, setShowView] = useState(false);
@@ -89,6 +90,7 @@ export default function TableContainer({ course }: TableContainerProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showDeleteAllConfirmation, setShowDeleteAllConfirmation] =
     useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // You can process the files or send them to your server here
@@ -517,6 +519,9 @@ export default function TableContainer({ course }: TableContainerProps) {
           `${process.env.NEXT_PUBLIC_API}/student/${course}?search=${searchQuery}`,
         );
         setStudentList(response.data);
+        if (searchQuery) {
+          setCurrentPage(1);
+        }
       } catch (error) {
         console.error(error);
         toast({
@@ -530,7 +535,7 @@ export default function TableContainer({ course }: TableContainerProps) {
 
     fetchStudents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [course, searchQuery]);
+  }, [course, searchQuery, currentPage]);
 
   useEffect(() => {
     if (studentDetails) {
@@ -628,6 +633,8 @@ export default function TableContainer({ course }: TableContainerProps) {
       <CustomDataTable
         data={studentList}
         itemsPerPage={10}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
@@ -660,8 +667,7 @@ export default function TableContainer({ course }: TableContainerProps) {
               </p>
             ) : (
               <p className="mt-2 text-sm text-gray-600">
-                Drag &apos;n&apos; drop some files here, or click to select
-                files
+                Drag &apos;n&apos; drop file here, or click to select files
               </p>
             )}
             <p className="mt-1 text-xs text-gray-500">
@@ -673,7 +679,7 @@ export default function TableContainer({ course }: TableContainerProps) {
 
       {/* Single Add Dialog */}
       <Dialog open={showSingleAdd} onOpenChange={handleCloseDialog}>
-        <DialogContent className="sm:max-w-[450px]">
+        <DialogContent className="sm:max-w-[450px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add Student</DialogTitle>
             <DialogDescription>
@@ -785,7 +791,7 @@ export default function TableContainer({ course }: TableContainerProps) {
 
       {/* View Dialog */}
       <Dialog open={showView} onOpenChange={setShowView}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Student Details</DialogTitle>
             <DialogDescription>View student details.</DialogDescription>
@@ -848,7 +854,7 @@ export default function TableContainer({ course }: TableContainerProps) {
 
       {/* Edit Dialog */}
       <Dialog open={showEdit} onOpenChange={handleCloseEditDialog}>
-        <DialogContent className="sm:max-w-[450px]">
+        <DialogContent className="sm:max-w-[450px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Student Information</DialogTitle>
             <DialogDescription>

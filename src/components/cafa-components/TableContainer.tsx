@@ -229,8 +229,7 @@ export default function TableContainer() {
               </p>
             ) : (
               <p className="mt-2 text-sm text-gray-600">
-                Drag &apos;n&apos; drop some files here, or click to select
-                files
+                Drag &apos;n&apos; drop file here, or click to select files
               </p>
             )}
             <p className="mt-1 text-xs text-gray-500">

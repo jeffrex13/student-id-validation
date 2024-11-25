@@ -35,6 +35,8 @@ import { Student, SortState, CustomTableProps } from '@/types';
 export default function CustomDataTable({
   data,
   itemsPerPage = 5,
+  currentPage,
+  setCurrentPage,
   onView,
   onEdit,
   onDelete,
@@ -45,7 +47,7 @@ export default function CustomDataTable({
     column: null,
     direction: null,
   });
-  const [currentPage, setCurrentPage] = useState(1);
+
   const handleSort = (column: keyof Student) => {
     if (column === 'name') {
       setSortState((prevState) => ({
@@ -253,7 +255,7 @@ export default function CustomDataTable({
         <div className="space-x-2">
           <Button
             variant="outline"
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
             disabled={currentPage === 1}
           >
             Previous
@@ -261,7 +263,7 @@ export default function CustomDataTable({
           <Button
             variant="outline"
             onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              setCurrentPage(Math.min(currentPage + 1, totalPages))
             }
             disabled={currentPage === totalPages}
           >
