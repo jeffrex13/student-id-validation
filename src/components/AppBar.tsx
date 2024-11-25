@@ -52,13 +52,13 @@ export default function AppBar() {
   };
 
   return (
-    <div className="flex items-center justify-end p-4 gap-4 bg-white border-b border-gray-200">
+    <div className="flex items-center justify-end p-4 gap-4">
       {/* <ThemeToggle /> */}
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-12 w-12 rounded-full">
             <Avatar className="h-12 w-12">
-              <AvatarFallback>
+              <AvatarFallback className="bg-[#8F001C] text-white">
                 {userName ? userName.charAt(0) : 'John Doe'.charAt(0)}
               </AvatarFallback>
             </Avatar>

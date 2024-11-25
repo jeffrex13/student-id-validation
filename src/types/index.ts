@@ -23,6 +23,8 @@ export interface CustomTableProps {
   onDelete?: (student: Student) => void;
   selectedIds?: string[];
   handleCheckboxChange?: (id: string) => void;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
 }
 
 export interface DialogProps {
