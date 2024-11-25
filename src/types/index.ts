@@ -1,3 +1,12 @@
+export interface Users {
+  createdAt?: string;
+  _id: string;
+  name: string;
+  username: string;
+  password?: string;
+  userType: string;
+}
+
 export interface Student {
   _id: string;
   name: string;
@@ -11,7 +20,12 @@ export interface Student {
 export type SortDirection = 'asc' | 'desc' | null;
 
 export interface SortState {
-  column: keyof Student | null;
+  column: keyof Student | Users | null;
+  direction: SortDirection;
+}
+
+export interface SortUsers {
+  column: keyof Users | null;
   direction: SortDirection;
 }
 
@@ -23,6 +37,16 @@ export interface CustomTableProps {
   onDelete?: (student: Student) => void;
   selectedIds?: string[];
   handleCheckboxChange?: (id: string) => void;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+}
+
+export interface CustomUserTableProps {
+  data: Users[];
+  itemsPerPage?: number;
+  onView?: (student: Users) => void;
+  onEdit?: (student: Users) => void;
+  onDelete?: (student: Users) => void;
   currentPage: number;
   setCurrentPage: (page: number) => void;
 }
