@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -8,9 +9,28 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 import Logo from '../../../public/images/logo.png';
 import { menuItems } from '@/lib/menuItems';
+import { getUser } from '@/app/actions/auth';
 
 const SidebarContent: React.FC<{ className?: string }> = ({ className }) => {
   const pathname = usePathname();
+  const [userType, setUserType] = useState<string>('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getUser();
+      if (data) {
+        setUserType(data.userType);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const filteredMenuItems = menuItems.filter(
+    (item) =>
+      (item.adminAccess === false && userType === 'Super Admin') ||
+      item.adminAccess === true,
+  );
 
   return (
     <div className={cn('relative flex flex-col h-screen', className)}>
@@ -39,7 +59,7 @@ const SidebarContent: React.FC<{ className?: string }> = ({ className }) => {
         </div>
         <ScrollArea className="flex-1 pt-4">
           <div className="space-y-2 px-2">
-            {menuItems.map((item) => (
+            {filteredMenuItems.map((item) => (
               <Link key={item.path} href={item.path} passHref>
                 <Button
                   variant={pathname === item.path ? 'default' : 'ghost'}

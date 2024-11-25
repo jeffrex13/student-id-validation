@@ -22,6 +22,7 @@ import { useRouter } from 'next/navigation';
 const SignUpContainer = () => {
   const { toast } = useToast();
   const router = useRouter();
+  const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -39,6 +40,7 @@ const SignUpContainer = () => {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API}/auth/register`,
         {
+          name,
           username,
           password,
           userType: 'Admin',
@@ -97,6 +99,16 @@ const SignUpContainer = () => {
           className="flex flex-col content-center gap-4"
           onSubmit={handleSubmit}
         >
+          <div>
+            <Input
+              type="text"
+              placeholder="Enter Name"
+              className="h-10"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
           <div>
             <Input
               type="text"
