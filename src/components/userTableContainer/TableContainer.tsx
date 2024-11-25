@@ -217,10 +217,11 @@ export default function TableContainer() {
   };
 
   const handleCloseEditDialog = () => {
-    setShowEdit(false);
     setConfirmPassword('');
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setChangePassword(false);
+    setShowEdit(false);
   };
 
   useEffect(() => {
@@ -619,7 +620,7 @@ export default function TableContainer() {
                 >
                   Back
                 </Button>
-                <Button onClick={handleEditSubmit}>Confirm</Button>
+                <Button onClick={handleEditSubmit}>Save changes</Button>
               </>
             )}
           </DialogFooter>
