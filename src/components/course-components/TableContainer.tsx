@@ -5,6 +5,9 @@ import { useDropzone } from 'react-dropzone';
 import CustomDataTable from '../CustomTable';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
@@ -512,6 +515,55 @@ export default function TableContainer({ course }: TableContainerProps) {
     setShowEdit(false);
   };
 
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+
+    // Add title
+    doc.setFontSize(16);
+    doc.text(courseNames[course], doc.internal.pageSize.width / 2, 20, {
+      align: 'center',
+    });
+
+    // Define the columns
+    const columns = [
+      { header: 'ID', dataKey: 'tup_id' },
+      { header: 'Name', dataKey: 'name' },
+      { header: 'Semester', dataKey: 'semester' },
+      { header: 'Year', dataKey: 'school_year' },
+      { header: 'Status', dataKey: 'isValid' },
+    ];
+
+    // Transform the data
+    const data = studentList.map((student) => ({
+      tup_id: student.tup_id,
+      name: student.name,
+      semester: student.semester || 'N/A',
+      school_year: student.school_year,
+      isValid: student.isValid ? 'Valid' : 'Not Valid',
+    }));
+
+    // Generate the table
+    (doc as any).autoTable({
+      columns: columns,
+      body: data,
+      startY: 30,
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: {
+        fillColor: [153, 0, 17], // Maroon color
+        textColor: 255,
+        fontSize: 9,
+        fontStyle: 'bold',
+      },
+      alternateRowStyles: { fillColor: [245, 245, 245] },
+      margin: { top: 10 },
+    });
+
+    // Save the PDF
+    doc.save(
+      `${courseNames[course]}-${new Date().toISOString().split('T')[0]}.pdf`,
+    );
+  };
+
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -620,8 +672,9 @@ export default function TableContainer({ course }: TableContainerProps) {
 
           <Button
             variant="outline"
-            disabled
+            // disabled
             className="flex-grow md:flex-grow-0"
+            onClick={exportToPDF}
           >
             Export
             <FolderOutput className="w-4 h-4" />
