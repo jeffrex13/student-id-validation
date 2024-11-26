@@ -672,7 +672,7 @@ export default function TableContainer({ course }: TableContainerProps) {
 
           <Button
             variant="outline"
-            // disabled
+            disabled={studentList.length === 0}
             className="flex-grow md:flex-grow-0"
             onClick={exportToPDF}
           >
