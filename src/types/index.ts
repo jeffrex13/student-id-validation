@@ -15,6 +15,7 @@ export interface Student {
   isValid: boolean;
   profile_image?: string;
   semester?: string;
+  dateValidated?: string;
 }
 
 export type SortDirection = 'asc' | 'desc' | null;

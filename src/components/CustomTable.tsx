@@ -135,6 +135,7 @@ export default function CustomDataTable({
                 'image',
                 'ID',
                 'name',
+                'date validated',
                 'semester',
                 'year',
                 'status',
@@ -184,6 +185,19 @@ export default function CustomDataTable({
                   </TableCell>
                   <TableCell>{item.tup_id || 'N/A'}</TableCell>
                   <TableCell>{item.name || 'N/A'}</TableCell>
+                  <TableCell>
+                    {' '}
+                    {item.dateValidated
+                      ? new Date(item.dateValidated).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: 'numeric',
+                          hour12: true,
+                        })
+                      : 'N/A'}
+                  </TableCell>
                   <TableCell>{item.semester || 'N/A'}</TableCell>
                   <TableCell>{item.school_year || 'N/A'}</TableCell>
                   <TableCell>
