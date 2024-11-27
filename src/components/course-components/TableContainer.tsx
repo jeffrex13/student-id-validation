@@ -528,6 +528,7 @@ export default function TableContainer({ course }: TableContainerProps) {
     const columns = [
       { header: 'ID', dataKey: 'tup_id' },
       { header: 'Name', dataKey: 'name' },
+      { header: 'Date Validated', dataKey: 'dateValidated' },
       { header: 'Semester', dataKey: 'semester' },
       { header: 'Year', dataKey: 'school_year' },
       { header: 'Status', dataKey: 'isValid' },
@@ -537,6 +538,16 @@ export default function TableContainer({ course }: TableContainerProps) {
     const data = studentList.map((student) => ({
       tup_id: student.tup_id,
       name: student.name,
+      dateValidated: student.dateValidated
+        ? new Date(student.dateValidated).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+          })
+        : 'N/A',
       semester: student.semester || 'N/A',
       school_year: student.school_year,
       isValid: student.isValid ? 'Valid' : 'Not Valid',

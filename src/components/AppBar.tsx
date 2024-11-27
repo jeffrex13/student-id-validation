@@ -52,7 +52,7 @@ export default function AppBar() {
   };
 
   return (
-    <div className="flex items-center justify-end p-4 gap-4">
+    <div className="flex items-center justify-end p-4 gap-4 sticky">
       {/* <ThemeToggle /> */}
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>

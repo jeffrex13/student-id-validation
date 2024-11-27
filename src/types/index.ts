@@ -15,6 +15,7 @@ export interface Student {
   isValid: boolean;
   profile_image?: string;
   semester?: string;
+  dateValidated?: string;
 }
 
 export type SortDirection = 'asc' | 'desc' | null;
@@ -56,4 +57,21 @@ export interface DialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   actionType?: 'validate' | 'scan';
+}
+
+export interface CourseStats {
+  total: number;
+  valid: number;
+  invalid: number;
+  noValidationField: number;
+}
+
+export interface ValidationStats {
+  total: number;
+  valid: number;
+  invalid: number;
+  noValidationField: number;
+  courseStats: {
+    [key: string]: CourseStats;
+  };
 }
