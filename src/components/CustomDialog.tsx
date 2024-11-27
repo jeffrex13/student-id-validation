@@ -59,17 +59,34 @@ const CustomDialog = ({
 
   const handleValidate = async () => {
     try {
+      // Toggle the isValid status
+      const newValidStatus = !currentStudentData.isValid;
+
       const result = await axios.patch(
         `${process.env.NEXT_PUBLIC_API}/student/${studentData._id}`,
-        { isValid: true },
+        { isValid: newValidStatus },
       );
+
       setCurrentStudentData({
         ...currentStudentData,
         isValid: result.data.updatedStudent.isValid,
       });
       setShowValidateConfirmation(false);
+
+      toast({
+        title: 'Success',
+        description: `Student ${
+          newValidStatus ? 'validated' : 'revoked'
+        } successfully`,
+        variant: 'default',
+      });
     } catch (error) {
-      console.error('Error validating student:', error);
+      console.error('Error updating validation status:', error);
+      toast({
+        title: 'Error',
+        description: 'Error updating validation status',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -316,10 +333,16 @@ const CustomDialog = ({
                   </Button>
                 ) : (
                   <Button
-                    className="w-full"
+                    className={cn(
+                      'w-full',
+                      currentStudentData.isValid &&
+                        'bg-red-500 hover:bg-red-600',
+                    )}
                     onClick={() => setShowValidateConfirmation(true)}
                   >
-                    Validate
+                    {currentStudentData.isValid
+                      ? 'Revoke Validation'
+                      : 'Validate'}
                   </Button>
                 )}
                 <Button
@@ -343,9 +366,17 @@ const CustomDialog = ({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirm Validation</DialogTitle>
+            <DialogTitle>
+              {currentStudentData.isValid
+                ? 'Confirm Revocation'
+                : 'Confirm Validation'}
+            </DialogTitle>
           </DialogHeader>
-          <p>Are you sure you want to validate this student?</p>
+          <p>
+            {currentStudentData.isValid
+              ? 'Are you sure you want to revoke validation for this student?'
+              : 'Are you sure you want to validate this student?'}
+          </p>
           <DialogFooter>
             <Button
               variant="outline"
@@ -353,7 +384,12 @@ const CustomDialog = ({
             >
               Cancel
             </Button>
-            <Button onClick={handleValidate}>Confirm</Button>
+            <Button
+              onClick={handleValidate}
+              variant={currentStudentData.isValid ? 'destructive' : 'default'}
+            >
+              {currentStudentData.isValid ? 'Revoke' : 'Validate'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
