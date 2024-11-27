@@ -6,8 +6,13 @@ export interface MenuItem {
 
 export const menuItems: MenuItem[] = [
   {
-    name: 'Home',
+    name: 'Dashboard',
     path: '/',
+    adminAccess: true,
+  },
+  {
+    name: 'Home',
+    path: '/home',
     adminAccess: true,
   },
   {

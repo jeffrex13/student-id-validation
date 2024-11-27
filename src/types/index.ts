@@ -58,3 +58,20 @@ export interface DialogProps {
   setOpen: (open: boolean) => void;
   actionType?: 'validate' | 'scan';
 }
+
+export interface CourseStats {
+  total: number;
+  valid: number;
+  invalid: number;
+  noValidationField: number;
+}
+
+export interface ValidationStats {
+  total: number;
+  valid: number;
+  invalid: number;
+  noValidationField: number;
+  courseStats: {
+    [key: string]: CourseStats;
+  };
+}
