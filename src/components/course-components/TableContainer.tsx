@@ -517,7 +517,10 @@ export default function TableContainer({ course }: TableContainerProps) {
 
   const exportToPDF = () => {
     const doc = new jsPDF();
-    const validStudents = studentList.filter((student) => student.isValid);
+    // const validStudents = studentList.filter((student) => student.isValid);
+    const validStudents = studentList
+      .filter((student) => student.isValid)
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     // Add title
     doc.setFontSize(16);
