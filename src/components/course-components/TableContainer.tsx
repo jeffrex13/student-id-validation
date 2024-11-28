@@ -531,7 +531,7 @@ export default function TableContainer({ course }: TableContainerProps) {
     // Add count of valid students
     doc.setFontSize(12);
     doc.text(
-      `Total Valid Students: ${validStudents.length}`,
+      `Total Validated Students: ${validStudents.length}`,
       doc.internal.pageSize.width / 2,
       30,
       { align: 'center' },
