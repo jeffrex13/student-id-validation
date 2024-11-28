@@ -517,12 +517,22 @@ export default function TableContainer({ course }: TableContainerProps) {
 
   const exportToPDF = () => {
     const doc = new jsPDF();
+    const validStudents = studentList.filter((student) => student.isValid);
 
     // Add title
     doc.setFontSize(16);
     doc.text(courseNames[course], doc.internal.pageSize.width / 2, 20, {
       align: 'center',
     });
+
+    // Add count of valid students
+    doc.setFontSize(12);
+    doc.text(
+      `Total Valid Students: ${validStudents.length}`,
+      doc.internal.pageSize.width / 2,
+      30,
+      { align: 'center' },
+    );
 
     // Define the columns
     const columns = [
@@ -535,7 +545,25 @@ export default function TableContainer({ course }: TableContainerProps) {
     ];
 
     // Transform the data
-    const data = studentList.map((student) => ({
+    // const data = studentList.map((student) => ({
+    //   tup_id: student.tup_id,
+    //   name: student.name,
+    //   dateValidated: student.dateValidated
+    //     ? new Date(student.dateValidated).toLocaleString('en-US', {
+    //         year: 'numeric',
+    //         month: 'short',
+    //         day: 'numeric',
+    //         hour: 'numeric',
+    //         minute: 'numeric',
+    //         hour12: true,
+    //       })
+    //     : 'N/A',
+    //   semester: student.semester || 'N/A',
+    //   school_year: student.school_year,
+    //   isValid: student.isValid ? 'Valid' : 'Not Valid',
+    // }));
+
+    const data = validStudents.map((student) => ({
       tup_id: student.tup_id,
       name: student.name,
       dateValidated: student.dateValidated
@@ -550,14 +578,15 @@ export default function TableContainer({ course }: TableContainerProps) {
         : 'N/A',
       semester: student.semester || 'N/A',
       school_year: student.school_year,
-      isValid: student.isValid ? 'Valid' : 'Not Valid',
+      isValid: 'Valid',
     }));
 
     // Generate the table
     (doc as any).autoTable({
       columns: columns,
       body: data,
-      startY: 30,
+      // startY: 30,
+      startY: 40, // Increased from 30 to make room for the count
       styles: { fontSize: 8, cellPadding: 2 },
       headStyles: {
         fillColor: [153, 0, 17], // Maroon color
@@ -819,7 +848,7 @@ export default function TableContainer({ course }: TableContainerProps) {
               />
             </div>
 
-            <div className="grid grid-cols-4 items-center gap-2 mx-4">
+            <div className="grid grid-cols-4 gap-4 mx-4">
               <Label className="text-right">Semester</Label>
               <div className="col-span-3">
                 <RadioGroup
@@ -830,7 +859,7 @@ export default function TableContainer({ course }: TableContainerProps) {
                       semester: value,
                     })
                   }
-                  className="flex items-center gap-2"
+                  className="flex flex-col justify-center gap-2"
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="1st Semester" id="1st-semester" />
@@ -839,6 +868,10 @@ export default function TableContainer({ course }: TableContainerProps) {
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="2nd Semester" id="2nd-semester" />
                     <Label htmlFor="2nd-semester">2nd Semester</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Summer" id="summer" />
+                    <Label htmlFor="summer">Summer</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -1008,7 +1041,7 @@ export default function TableContainer({ course }: TableContainerProps) {
                 className="col-span-3"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-2 mx-4">
+            <div className="grid grid-cols-4 gap-4 mx-4">
               <Label className="text-right">Semester</Label>
               <div className="col-span-3">
                 <RadioGroup
@@ -1019,7 +1052,7 @@ export default function TableContainer({ course }: TableContainerProps) {
                       semester: value,
                     })
                   }
-                  className="flex items-center gap-2"
+                  className="flex flex-col justify-center gap-2"
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="1st Semester" id="1st-semester" />
@@ -1028,6 +1061,10 @@ export default function TableContainer({ course }: TableContainerProps) {
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="2nd Semester" id="2nd-semester" />
                     <Label htmlFor="2nd-semester">2nd Semester</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Summer" id="summer" />
+                    <Label htmlFor="summer">Summer</Label>
                   </div>
                 </RadioGroup>
               </div>
