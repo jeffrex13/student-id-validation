@@ -137,6 +137,7 @@ export default function CustomDataTable({
                 'name',
                 'date validated',
                 'semester',
+                'year_level',
                 'year',
                 'status',
                 'qr Code',
@@ -199,6 +200,7 @@ export default function CustomDataTable({
                       : 'N/A'}
                   </TableCell>
                   <TableCell>{item.semester || 'N/A'}</TableCell>
+                  <TableCell>{item.year_level || 'N/A'}</TableCell>
                   <TableCell>{item.school_year || 'N/A'}</TableCell>
                   <TableCell>
                     {item.isValid ? (
@@ -251,7 +253,7 @@ export default function CustomDataTable({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={10} className="text-center py-4">
+                <TableCell colSpan={11} className="text-center py-4">
                   No data found
                 </TableCell>
               </TableRow>

@@ -44,6 +44,13 @@ import { debounce } from 'lodash';
 // import Image from 'next/image';
 import imageCompression from 'browser-image-compression';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 
 interface TableContainerProps {
   course: 'cafa' | 'cie' | 'cit' | 'cla' | 'coe' | 'cos';
@@ -75,6 +82,7 @@ export default function TableContainer({ course }: TableContainerProps) {
     school_year: '',
     isValid: false,
     semester: '',
+    year_level: '',
   });
   const [editFormData, setEditFormData] = useState<Student>({
     _id: '',
@@ -84,6 +92,7 @@ export default function TableContainer({ course }: TableContainerProps) {
     school_year: '',
     isValid: false,
     semester: '',
+    year_level: '',
   });
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   // const [imageFile, setImageFile] = useState<File | null>(null);
@@ -421,6 +430,7 @@ export default function TableContainer({ course }: TableContainerProps) {
           school_year: editFormData.school_year,
           isValid: editFormData.isValid,
           semester: editFormData.semester,
+          year_level: editFormData.year_level,
         },
       );
 
@@ -440,6 +450,7 @@ export default function TableContainer({ course }: TableContainerProps) {
           school_year: '',
           isValid: false,
           semester: '',
+          year_level: '',
         });
         refreshData(); // Refresh the table data
       }
@@ -491,6 +502,7 @@ export default function TableContainer({ course }: TableContainerProps) {
           tup_id: '',
           school_year: '',
           isValid: false,
+          year_level: '',
         });
         setSelectedImage(null); // Clear the selected image
       }
@@ -518,9 +530,29 @@ export default function TableContainer({ course }: TableContainerProps) {
   const exportToPDF = () => {
     const doc = new jsPDF();
     // const validStudents = studentList.filter((student) => student.isValid);
+
     const validStudents = studentList
       .filter((student) => student.isValid)
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => {
+        // First sort by year_level
+        const yearOrder = {
+          '1st Year': 1,
+          '2nd Year': 2,
+          '3rd Year': 3,
+          '4th Year': 4,
+          '5th Year': 5,
+        };
+
+        const yearDiff =
+          (yearOrder[a.year_level as keyof typeof yearOrder] || 0) -
+          (yearOrder[b.year_level as keyof typeof yearOrder] || 0);
+
+        // If years are different, return the year comparison
+        if (yearDiff !== 0) return yearDiff;
+
+        // If years are the same, sort by name
+        return a.name.localeCompare(b.name);
+      });
 
     // Add title
     doc.setFontSize(16);
@@ -543,6 +575,7 @@ export default function TableContainer({ course }: TableContainerProps) {
       { header: 'Name', dataKey: 'name' },
       { header: 'Date Validated', dataKey: 'dateValidated' },
       { header: 'Semester', dataKey: 'semester' },
+      { header: 'Year Level', dataKey: 'year_level' },
       { header: 'Year', dataKey: 'school_year' },
       { header: 'Status', dataKey: 'isValid' },
     ];
@@ -580,6 +613,7 @@ export default function TableContainer({ course }: TableContainerProps) {
           })
         : 'N/A',
       semester: student.semester || 'N/A',
+      year_level: student.year_level || 'N/A',
       school_year: student.school_year,
       isValid: 'Valid',
     }));
@@ -642,6 +676,7 @@ export default function TableContainer({ course }: TableContainerProps) {
         isValid: studentDetails.isValid,
         profile_image: studentDetails.profile_image,
         semester: studentDetails.semester,
+        year_level: studentDetails.year_level,
       });
     }
   }, [studentDetails]);
@@ -835,22 +870,6 @@ export default function TableContainer({ course }: TableContainerProps) {
               />
             </div>
 
-            <div className="grid grid-cols-4 items-center gap-2 mx-4">
-              <Label htmlFor="school_year" className="text-right">
-                School Year
-              </Label>
-              <Input
-                id="school_year"
-                className="col-span-3"
-                onChange={(e) =>
-                  setAddSingleStudentData({
-                    ...addSingleStudentData,
-                    school_year: e.target.value,
-                  })
-                }
-              />
-            </div>
-
             <div className="grid grid-cols-4 gap-4 mx-4">
               <Label className="text-right">Semester</Label>
               <div className="col-span-3">
@@ -878,6 +897,46 @@ export default function TableContainer({ course }: TableContainerProps) {
                   </div>
                 </RadioGroup>
               </div>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4 mx-4">
+              <Label className="text-right">Year Level</Label>
+              <Select
+                value={addSingleStudentData.year_level}
+                onValueChange={(value) =>
+                  setAddSingleStudentData({
+                    ...addSingleStudentData,
+                    year_level: value,
+                  })
+                }
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select Year Level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1st Year">1st Year</SelectItem>
+                  <SelectItem value="2nd Year">2nd Year</SelectItem>
+                  <SelectItem value="3rd Year">3rd Year</SelectItem>
+                  <SelectItem value="4th Year">4th Year</SelectItem>
+                  <SelectItem value="5th Year">5th Year</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-2 mx-4">
+              <Label htmlFor="school_year" className="text-right">
+                School Year
+              </Label>
+              <Input
+                id="school_year"
+                className="col-span-3"
+                onChange={(e) =>
+                  setAddSingleStudentData({
+                    ...addSingleStudentData,
+                    school_year: e.target.value,
+                  })
+                }
+              />
             </div>
           </div>
           <DialogFooter>
@@ -922,6 +981,13 @@ export default function TableContainer({ course }: TableContainerProps) {
                 <div className="flex items-center gap-2">
                   <p className="font-semibold">Semester:</p>
                   <p>{studentDetails?.semester ?? 'N/A'}</p>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold">Year level:</p>
+                  <p>{studentDetails?.year_level ?? 'N/A'}</p>
                 </div>
               </div>
 
@@ -1028,22 +1094,6 @@ export default function TableContainer({ course }: TableContainerProps) {
                 className="col-span-3"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="school_year" className="text-right">
-                School Year
-              </Label>
-              <Input
-                id="school_year"
-                value={editFormData.school_year ?? 'N/A'}
-                onChange={(e) =>
-                  setEditFormData({
-                    ...editFormData,
-                    school_year: e.target.value,
-                  })
-                }
-                className="col-span-3"
-              />
-            </div>
             <div className="grid grid-cols-4 gap-4 mx-4">
               <Label className="text-right">Semester</Label>
               <div className="col-span-3">
@@ -1072,6 +1122,46 @@ export default function TableContainer({ course }: TableContainerProps) {
                 </RadioGroup>
               </div>
             </div>
+            <div className="grid grid-cols-4 items-center gap-4 mx-4">
+              <Label className="text-right">Year Level</Label>
+              <Select
+                value={editFormData.year_level}
+                onValueChange={(value) =>
+                  setEditFormData({
+                    ...editFormData,
+                    year_level: value,
+                  })
+                }
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select Year Level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1st Year">1st Year</SelectItem>
+                  <SelectItem value="2nd Year">2nd Year</SelectItem>
+                  <SelectItem value="3rd Year">3rd Year</SelectItem>
+                  <SelectItem value="4th Year">4th Year</SelectItem>
+                  <SelectItem value="5th Year">5th Year</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="school_year" className="text-right">
+                School Year
+              </Label>
+              <Input
+                id="school_year"
+                value={editFormData.school_year ?? 'N/A'}
+                onChange={(e) =>
+                  setEditFormData({
+                    ...editFormData,
+                    school_year: e.target.value,
+                  })
+                }
+                className="col-span-3"
+              />
+            </div>
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">Status</Label>
               <div className="col-span-3">
