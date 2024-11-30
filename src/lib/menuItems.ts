@@ -11,7 +11,7 @@ export const menuItems: MenuItem[] = [
     adminAccess: true,
   },
   {
-    name: 'Home',
+    name: 'Scan ID',
     path: '/home',
     adminAccess: true,
   },

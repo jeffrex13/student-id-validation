@@ -19,6 +19,15 @@ import { DialogProps } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import imageCompression from 'browser-image-compression';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Label } from './ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
 
 const CustomDialog = ({
   studentData,
@@ -334,18 +343,31 @@ const CustomDialog = ({
               <div className="grid grid-cols-3 items-center gap-4">
                 <p className="text-sm font-medium">Semester:</p>
                 {isEdit ? (
-                  <Input
-                    className="col-span-2"
+                  <RadioGroup
                     value={
                       editStudentData.semester || currentStudentData.semester
                     }
-                    onChange={(e) =>
+                    onValueChange={(value) =>
                       setEditStudentData({
                         ...editStudentData,
-                        semester: e.target.value,
+                        semester: value,
                       })
                     }
-                  />
+                    className="flex flex-col justify-center gap-2"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="1st Semester" id="1st-semester" />
+                      <Label htmlFor="1st-semester">1st Semester</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="2nd Semester" id="2nd-semester" />
+                      <Label htmlFor="2nd-semester">2nd Semester</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Summer" id="summer" />
+                      <Label htmlFor="summer">Summer</Label>
+                    </div>
+                  </RadioGroup>
                 ) : (
                   <p className="col-span-2 text-sm">
                     {currentStudentData.semester}
@@ -356,19 +378,29 @@ const CustomDialog = ({
               <div className="grid grid-cols-3 items-center gap-4">
                 <p className="text-sm font-medium">Year Level:</p>
                 {isEdit ? (
-                  <Input
-                    className="col-span-2"
+                  <Select
                     value={
                       editStudentData.year_level ||
                       currentStudentData.year_level
                     }
-                    onChange={(e) =>
+                    onValueChange={(value) =>
                       setEditStudentData({
                         ...editStudentData,
-                        year_level: e.target.value,
+                        year_level: value,
                       })
                     }
-                  />
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select Year Level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1st Year">1st Year</SelectItem>
+                      <SelectItem value="2nd Year">2nd Year</SelectItem>
+                      <SelectItem value="3rd Year">3rd Year</SelectItem>
+                      <SelectItem value="4th Year">4th Year</SelectItem>
+                      <SelectItem value="5th Year">5th Year</SelectItem>
+                    </SelectContent>
+                  </Select>
                 ) : (
                   <p className="col-span-2 text-sm">
                     {currentStudentData.year_level}

@@ -137,7 +137,7 @@ export default function CustomDataTable({
                 'name',
                 'date validated',
                 'semester',
-                'year_level',
+                'year level',
                 'year',
                 'status',
                 'qr Code',
