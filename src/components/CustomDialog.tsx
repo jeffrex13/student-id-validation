@@ -35,6 +35,9 @@ const CustomDialog = ({
     tup_id: '',
     school_year: '',
     isValid: false,
+    semester: '',
+    year_level: '',
+    dateValidated: '',
   });
   const [showValidateConfirmation, setShowValidateConfirmation] =
     useState(false);
@@ -47,6 +50,9 @@ const CustomDialog = ({
     tup_id: studentData.tup_id,
     school_year: studentData.school_year,
     isValid: studentData.isValid,
+    semester: studentData.semester,
+    year_level: studentData.year_level,
+    dateValidated: studentData.dateValidated,
   });
 
   const hasChanges = () => {
@@ -106,6 +112,9 @@ const CustomDialog = ({
           school_year: studentData.school_year,
           tup_id: studentData.tup_id,
           isValid: studentData.isValid,
+          semester: studentData.semester || '',
+          year_level: studentData.year_level,
+          dateValidated: studentData.dateValidated || '',
         });
       }
     }
@@ -127,6 +136,9 @@ const CustomDialog = ({
           tup_id: result.data.updatedStudent.tup_id,
           school_year: result.data.updatedStudent.school_year,
           isValid: result.data.updatedStudent.isValid,
+          semester: result.data.updatedStudent.semester,
+          year_level: result.data.updatedStudent.year_level,
+          dateValidated: result.data.updatedStudent.dateValidated,
         });
         setIsEdit(false);
         setShowEditConfirmation(false);
@@ -317,6 +329,66 @@ const CustomDialog = ({
                     {currentStudentData.school_year}
                   </p>
                 )}
+              </div>
+
+              <div className="grid grid-cols-3 items-center gap-4">
+                <p className="text-sm font-medium">Semester:</p>
+                {isEdit ? (
+                  <Input
+                    className="col-span-2"
+                    value={
+                      editStudentData.semester || currentStudentData.semester
+                    }
+                    onChange={(e) =>
+                      setEditStudentData({
+                        ...editStudentData,
+                        semester: e.target.value,
+                      })
+                    }
+                  />
+                ) : (
+                  <p className="col-span-2 text-sm">
+                    {currentStudentData.semester}
+                  </p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-3 items-center gap-4">
+                <p className="text-sm font-medium">Year Level:</p>
+                {isEdit ? (
+                  <Input
+                    className="col-span-2"
+                    value={
+                      editStudentData.year_level ||
+                      currentStudentData.year_level
+                    }
+                    onChange={(e) =>
+                      setEditStudentData({
+                        ...editStudentData,
+                        year_level: e.target.value,
+                      })
+                    }
+                  />
+                ) : (
+                  <p className="col-span-2 text-sm">
+                    {currentStudentData.year_level}
+                  </p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-3 items-center gap-4">
+                <p className="text-sm font-medium">Date Validated:</p>
+                <p className="col-span-2 text-sm">
+                  {currentStudentData.dateValidated
+                    ? new Date(currentStudentData.dateValidated).toLocaleString(
+                        'en-US',
+                        {
+                          dateStyle: 'medium',
+                          timeStyle: 'short',
+                        },
+                      )
+                    : 'Not yet validated'}
+                </p>
               </div>
             </div>
           </div>

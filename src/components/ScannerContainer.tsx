@@ -16,14 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getUser } from '@/app/actions/auth';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-
-type Student = {
-  _id: string;
-  name: string;
-  tup_id: string;
-  school_year: string;
-  isValid: boolean;
-};
+import { Student } from '@/types';
 
 export default function ScannerContainer() {
   const { toast } = useToast();

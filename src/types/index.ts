@@ -16,6 +16,7 @@ export interface Student {
   profile_image?: string;
   semester?: string;
   dateValidated?: string;
+  year_level: string;
 }
 
 export type SortDirection = 'asc' | 'desc' | null;
